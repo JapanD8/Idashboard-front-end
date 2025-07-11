@@ -31459,3 +31459,7 @@ body.is-dark {
 .is-dark:not(.bg-darker):not(.bg-dark) .bg-light {
   background-color: RGBA(7, 19, 33, var(--bs-bg-opacity, 1)) !important;
 }
+
+.login-bg{
+      background-image: url(../images/pattern/bg.jpg);
+}

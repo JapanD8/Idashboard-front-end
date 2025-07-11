@@ -1,3 +1,9 @@
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +11,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>iDashboard</title>
   <link rel="icon" href="/static/src/logo/favicon.ico" type="image/png">
+  <link rel="stylesheet" href="/static/template/assets/css/style1ca7.css">
+  
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_base.css') }}">
@@ -20,35 +28,19 @@
 </head>
 <body>
   <div class="app-layout">
+    
     <aside class="sidebar">
-      <div class="sidebar-logo">
-        <img src="/static/src/logo/logo.png" alt="Logo">
+      <div class="sidebar-logo mb-5">
+       <img src="/static/src/logo/logo-dark.png" alt="Logo">
       </div>
-      <h2> iDashboard</h2>
-      <a href="/databases" class="nav-link"><i class='bx bx-home'></i> Home</a>
-      <a href="/databases" class="nav-link"><i class='bx bx-data'></i> Databases</a>
-      <a href="#" class="nav-link"><i class='bx bxs-slideshow'></i> API Settings</a>
-      <a href="#" class="nav-link"><i class='bx bx-cog'></i> Settings</a>
+      
+      <div class="dashboard-btn"><a href="/databases" class="nav-link"><i class='bx bx-home'></i> Dashboard</a></div>     
+      <div class="dashboard-btn"><a href="/databases" class="nav-link"><i class='bx bx-data'></i> Databases</a></div>
+      <div class="dashboard-btn"> <a href="#" class="nav-link"><i class='bx bxs-slideshow'></i> API Settings</a></div>
+      <div class="dashboard-btn"><a href="#" class="nav-link"><i class='bx bx-cog'></i> Settings</a></div>
     </aside>
 
-    <!---<div class="content-wrapper">
-      <div class="top-bar">
-        <div class="help"><i class='bx bx-help-circle'></i> Help</div>
-        <div class="user" id="user-icon"></div>
-      </div>
-      <div class="content-wrapper">
-        <div class="top-bar">
-          <div class="help"><i class='bx bx-help-circle'></i> Help</div>
-          <div class="user" id="user-icon"></div>
-          <div class="user-modal" id="user-modal">
-            <div class="icon-hover" id="user-email">{{email}}</div>
-            <div class="icon-hover">Upgrade plan</div>
-            <div class="icon-hover">Personalize</div>
-            <div class="icon-hover">Settings</div>
-            <div class="icon-hover">Help</div>
-            <div class="icon-hover">Log out</div>
-          </div>
-        </div>--->
+  
 
         <div class="content-wrapper">
             <div class="top-bar">

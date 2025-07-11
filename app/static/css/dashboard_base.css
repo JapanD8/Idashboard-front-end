@@ -13,7 +13,8 @@ body {
 
 .sidebar {
     width: 240px;
-    background-color: #070606;
+    background-color: #f6f4f5;
+    /*filter: drop-shadow(2px 5px 17px #d9e0f1);*/
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -37,8 +38,9 @@ body {
 }
 
 .nav-link {
-    color: #e0f2f1;
+    color: #000;
     display: flex;
+    font-weight: 400;
     align-items: center;
     padding: 10px 0;
     text-decoration: none;
@@ -50,11 +52,16 @@ body {
 .nav-link i {
     margin-right: 12px;
     font-size: 20px;
+    color: #000;
 }
 
 .nav-link:hover {
-    color: #e0f2f1;
+    color: #fff;
+    padding: 9px;
     background-color: #4a5568;
+}
+.nav-link i:hover {
+    color: #fff;
 }
 
 .content-wrapper {
@@ -66,7 +73,8 @@ body {
 
 .top-bar {
     height: 50px;
-    background-color:  #070606;
+    background-color:  #fff;
+    /*filter: drop-shadow(2px 5px 17px #d9e0f1);*/
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -78,6 +86,7 @@ body {
 .top-bar .help {
     display: flex;
     align-items: center;
+    font-weight: 300;
     gap: 6px;
     color: #ccc;
     cursor: pointer;
@@ -86,7 +95,7 @@ body {
 .top-bar .user {
     background-color: #fff;
     color: #000;
-    font-weight: bold;
+    font-weight: 400;
     padding: 3px;
     border-radius: 50%;
     font-size: 14px;
@@ -150,6 +159,7 @@ body {
     flex-grow: 1;
     padding: 40px;
     overflow-y: auto;
+    background: #fff;
    
 }
 
@@ -162,7 +172,6 @@ body {
     padding: 10px 20px;
     border-radius: 10px;
     font-size: 16px;
-    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -186,7 +195,7 @@ body {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
     gap: 20px;
 }
 
@@ -225,23 +234,25 @@ body {
 }
 
 .card .label {
-    background-color: #4a5568;
+     background-color: #fff;
     padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #fff;
+    border-radius: 7px;
+    font-size: 14px;
+    color: #000;
+    font-weight: 500;
     display: inline-block;
     margin-bottom: 10px;
 }
 
 .card h3 {
     margin: 10px 0 5px;
+    color: #fff;
     font-size: 18px;
 }
 
 .card small {
     font-size: 12px;
-    color: #cceee8;
+    color: #45d384;
 }
 
 .card img {
@@ -255,8 +266,8 @@ body {
 }
 
 .card button {
-    background-color: #282d36;
-    color: #fff;
+    background-color: #fff;
+    color: #000;
     border: none;
     padding: 8px 16px;
     margin-right: 10px;
@@ -267,6 +278,8 @@ body {
 
 .card button:hover {
     background-color: #4a5568;
+    color: #fff;
+    transition: 0.3s;
 }
 
 
@@ -398,12 +411,13 @@ body {
 
 .delete-icon {
     position: relative;
-    margin-left: 300px;
-    margin-top: -25px;
+    margin-top: 10px;
+    float: right;
+    color: #bd2130;
 }
 
 .delete-icon:hover {
-    color: #bd2130;
+    
   }
 
 .get-secret-label {
@@ -462,6 +476,31 @@ body {
     right: 10px;
 }  
 
+
+
+.dashboard-btn:hover {
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3); /* subtle blue glow */
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+    border-color: #007bff; /* optional border highlight */
+  }
+
+  .green-card{
+    background: #ebfdef;
+    border: none;
+    box-shadow: none;
+  }
+  .green-card:hover{
+    background: #ebfdef;
+    border: none;
+    box-shadow: none;
+  }
+
+  .card_h3_green{
+    margin: 10px 0 5px;
+    color: #0a8926  !important;
+    font-size: 18px;
+  }
 
 /* #add-database-connection-section {
     background-color: #006655;
