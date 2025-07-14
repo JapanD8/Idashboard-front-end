@@ -27,7 +27,7 @@ body {
   }
   
 .sidebar-logo img {
-    height: 20px; /* adjust the height of the logo */
+    height: 50px; /* adjust the height of the logo */
     width: auto;
     }
 .sidebar h2 {
@@ -74,7 +74,7 @@ body {
 .top-bar {
     height: 50px;
     background-color:  #fff;
-    /*filter: drop-shadow(2px 5px 17px #d9e0f1);*/
+    filter: drop-shadow(2px 5px 17px #d9e0f1);
     display: flex;
     justify-content: space-between;
     align-items: center;
