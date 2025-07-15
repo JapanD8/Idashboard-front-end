@@ -74,6 +74,25 @@ def dashboard():
     #return f"Welcome {current_user.email}"
     return render_template("dashboard_base.html", email="temp@gmail.com")
 
+@main.route("/chat")
+def chat():
+    #return f"Welcome {current_user.email}"
+    return render_template("chat-new.html ", email="temp@gmail.com")
+
+@main.route("/adddatabase")
+def add_database_new():
+    #return f"Welcome {current_user.email}"
+    return render_template("add_database_new.html ", email="temp@gmail.com")
+
+@main.route("/adddatabaseform")
+def add_database_form():
+    #return f"Welcome {current_user.email}"
+    return render_template("add_database_form.html ", email="temp@gmail.com")
+
+@main.route("/documentation")
+def documentation():
+    #return f"Welcome {current_user.email}"
+    return render_template("documentation.html ", email="temp@gmail.com")   
 
 @main.route("/databases")
 def databases():

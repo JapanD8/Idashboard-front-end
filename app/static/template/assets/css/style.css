@@ -22146,7 +22146,7 @@ select.border-dark.tt-hint:focus {
 }
 
 .form-group label {
- /* font-size: 20px; */
+  /*font-size: 20px;*/
   line-height: 1.4rem;
   vertical-align: top;
   margin-bottom: .5rem;
