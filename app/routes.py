@@ -94,6 +94,11 @@ def documentation():
     #return f"Welcome {current_user.email}"
     return render_template("documentation.html ", email="temp@gmail.com")   
 
+@main.route("/dashboardnew")
+def dashboard_new():
+    #return f"Welcome {current_user.email}"
+    return render_template("dashboard-new.html ", email="temp@gmail.com")   
+
 @main.route("/databases")
 def databases():
   
