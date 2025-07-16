@@ -20191,7 +20191,11 @@ code {
 
 @media (max-width: 991px) {
   .doc-content {
-    padding-top: 85px;
+    padding-top: 25px;
+  }
+  .add-dbtitle{
+    margin-top:10px !important;
+     font-size: 22px !important;
   }
 }
 
@@ -24125,7 +24129,7 @@ dl li {
     font-size: 30px !important;
 }
 .h80{
-	    height: 100px;
+	    /*height: 100px;*/
 }
 .h80:hover {
 	    background: #8d8d8d;
