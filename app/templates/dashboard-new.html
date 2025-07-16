@@ -210,9 +210,11 @@
                         <small class="text-muted">Created: {{ connection.created_at.strftime('%b %d, %Y') }}</small><br>
               
                         <div class="d-flex align-items-center justify-content-between mt-3">
+                       
+                           
                           <button type="button"
-                                  class="btn btn-inverse-success btn-fw connect-btn"
-                                  data-connection-id="{{ connection.id }}"
+                                  class="btn btn-inverse-success btn-fw connect-btn pushme2"
+                                  data-connection-id="{{ connection.id }}" 
                                   data-status="{{ connection.status }}">
                             {% if connection.status == 'connected' %}Disconnect{% else %}Connect{% endif %}
                           </button><br>

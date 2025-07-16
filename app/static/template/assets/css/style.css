@@ -24149,8 +24149,55 @@ dl li {
   }
 	
 /* Chat css */
-	
 
+	/* Toggle css */
+/* just outer white box, not necessary for functionality */
+.toggle-checkbox-wrapper {
+  background-color: #fff;
+  padding: 24px;
+}
+
+/* toggle styling starts here */
+/* hide the "default" checkbox/appearance */
+.toggle-checkbox {
+  display: none;
+}
+
+.slider {
+  position: relative;
+}
+
+
+.toggle-switch {
+  margin-left: 50px;
+}
+
+.toggle-switch.opt1 {
+  color: navy;
+}
+
+.toggle-switch.opt2 {
+  color: brown;
+  display: none;
+}
+
+.toggle-checkbox:checked + .slider::before {
+  background-color: lightsalmon;
+}
+
+.toggle-checkbox:checked + .slider::after {
+  background-color: maroon;
+  transform: translateX(16px);
+}
+
+.toggle-checkbox:checked ~ .slider > .toggle-switch.opt1 {
+  display: none;
+}
+
+.toggle-checkbox:checked ~ .slider > .toggle-switch.opt2 {
+  display: inline-block;
+}
+  
 
 	
 }
