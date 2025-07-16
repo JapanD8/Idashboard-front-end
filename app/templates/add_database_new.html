@@ -258,6 +258,28 @@
   <script src="/static/template/assets/js/typeahead.js"></script>
   <script src="/static/template/assets/js/select2.js"></script>
   <!-- End custom js for this page-->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".col-md-3 .card");
+
+  cards.forEach(card => {
+    card.addEventListener("click", function () {
+      // Remove selected class from all
+      cards.forEach(c => c.classList.remove("selected"));
+      
+      // Add selected class to clicked one
+      this.classList.add("selected");
+    });
+  });
+});
+</script>
+<style>
+.card.selected {
+  border: 2px solid #007bff; /* blue border */
+  background-color: #e8f0ff; /* light background */
+} </style>
+
 </body>
 
 </html>
