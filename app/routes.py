@@ -8,6 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 from itertools import chain
 from datetime import datetime
+import random
+
 active_connections = {}
 
 main = Blueprint("main", __name__)
@@ -77,27 +79,27 @@ def dashboard():
 @main.route("/chat")
 def chat():
     #return f"Welcome {current_user.email}"
-    return render_template("chat-new.html ", email="temp@gmail.com")
+    return render_template("chat-new.html", email="temp@gmail.com")
 
 @main.route("/adddatabase")
 def add_database_new():
     #return f"Welcome {current_user.email}"
-    return render_template("add_database_new.html ", email="temp@gmail.com")
+    return render_template("add_database_new.html", email="temp@gmail.com")
 
 @main.route("/adddatabaseform")
 def add_database_form():
     #return f"Welcome {current_user.email}"
-    return render_template("add_database_form.html ", email="temp@gmail.com")
+    return render_template("add_database_form.html", email="temp@gmail.com")
 
 @main.route("/documentation")
 def documentation():
     #return f"Welcome {current_user.email}"
-    return render_template("documentation.html ", email="temp@gmail.com")   
+    return render_template("documentation.html", email="temp@gmail.com")   
 
 @main.route("/dashboardnew")
 def dashboard_new():
     #return f"Welcome {current_user.email}"
-    return render_template("dashboard-new.html ", email="temp@gmail.com")   
+    return render_template("dashboard-new.html", email="temp@gmail.com")   
 
 @main.route("/databases")
 def databases():
@@ -177,5 +179,44 @@ def connect_connection(connection_id):
 def disconnect_connection(connection_id):
     
     return jsonify({'success': True})
-   
 
+   
+@main.route('/connections/<int:connection_id>/schema', methods=['GET'])
+def get_schema(connection_id):
+    
+    schema_data = {'database': 'INS_DB', 'tables': [{'name': 'insurance_data', 'columns': [{'name': 'age', 'type': 'int'}, {'name': 'sex', 'type': 'varchar(10)'}, {'name': 'weight', 'type': 'decimal(5,2)'}, {'name': 'bmi', 'type': 'decimal(5,2)'}, {'name': 'hereditary_diseases', 'type': 'varchar(20)'}, {'name': 'no_of_dependents', 'type': 'int'}, {'name': 'smoker', 'type': 'tinyint(1)'}, {'name': 'city', 'type': 'varchar(50)'}, {'name': 'bloodpressure', 'type': 'int'}, {'name': 'diabetes', 'type': 'tinyint(1)'}, {'name': 'regular_ex', 'type': 'tinyint(1)'}, {'name': 'job_title', 'type': 'varchar(50)'}, {'name': 'claim', 'type': 'decimal(10,2)'}]}]}
+
+
+    return jsonify({'success': True, "data": schema_data})
+
+@main.route('/get_secret', methods=['POST'])
+def get_key():
+    # db_id = request.json['db_id']
+    # user_id = request.json['user_id']
+    # print("conversation",db_id,user_id)
+    # token,secret =  create_access_token(user_id,db_id)
+
+    return jsonify({'success': True, 'secret_key': "fedffte"})
+
+
+@main.route("/chat_ai", methods=['POST'])
+def chat_ai():
+        chart_descriptions = [
+        "A chart showing motivational messages by theme.",
+        "Each row represents an inspiring quote and its focus area.",
+        "The table includes message number, text, and category.",
+        "This layout helps organize ideas clearly and visually.",
+        "Themes include coding, growth, innovation, and more.",
+        "It's a clean way to present information in rows and columns.",
+        "The format makes data easy to scan and understand quickly.",
+        "Messages encourage creativity, learning, and persistence.",
+        "Designed to look like a markdown-style table.",
+        "Perfect for documentation, presentations, or dashboards."
+        ]
+        aimessage = random.choice(chart_descriptions)
+        data = {"message":"I am here to help you with SQL queries and data visualization"}
+       
+        data["message"] =aimessage
+
+        return jsonify({'success': True, 'data': data})
+  
