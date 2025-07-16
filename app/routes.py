@@ -99,7 +99,76 @@ def documentation():
 @main.route("/dashboardnew")
 def dashboard_new():
     #return f"Welcome {current_user.email}"
-    return render_template("dashboard-new.html", email="temp@gmail.com")   
+    class FakeConnection:
+        def __init__(self, id, name, host, database, db_user, password, port, created_at, db_system):
+            self.id = id
+            self.name = name
+            self.host = host
+            self.database = database
+            self.db_user = db_user
+            self.password = password
+            self.port = port
+            self.created_at = created_at
+            self.db_system = db_system
+
+    connections = [
+    FakeConnection(
+        id=2,
+        name="Sales DB",
+        host="192.168.1.100",
+        database="sales_db",
+        db_user="sales_user",
+        password="secret123",
+        port=3306,
+        created_at=datetime(2024, 12, 1, 10, 30),
+        db_system="MySQL"
+    ),
+    FakeConnection(
+        id=3,
+        name="Marketing DB",
+        host="192.168.1.101",
+        database="marketing_db",
+        db_user="marketing_user",
+        password="secret456",
+        port=5432,
+        created_at=datetime(2024, 12, 2, 9, 15),
+        db_system="PostgreSQL"
+    ),
+    FakeConnection(
+        id=4,
+        name="Marketing DB",
+        host="192.168.1.101",
+        database="marketing_db",
+        db_user="marketing_user",
+        password="secret456",
+        port=5432,
+        created_at=datetime(2024, 12, 2, 9, 15),
+        db_system="PostgreSQL"
+    ),
+    FakeConnection(
+        id=5,
+        name="Marketing DB",
+        host="192.168.1.101",
+        database="marketing_db",
+        db_user="marketing_user",
+        password="secret456",
+        port=5432,
+        created_at=datetime(2024, 12, 2, 9, 15),
+        db_system="PostgreSQL"
+    ),
+    FakeConnection(
+        id=6,
+        name="Marketing DB",
+        host="192.168.1.101",
+        database="marketing_db",
+        db_user="marketing_user",
+        password="secret456",
+        port=5432,
+        created_at=datetime(2024, 12, 2, 9, 15),
+        db_system="PostgreSQL"
+    )
+    ]
+    return render_template("dashboard-new.html",connections=connections, email="temp@gmail.com")   
 
 @main.route("/databases")
 def databases():

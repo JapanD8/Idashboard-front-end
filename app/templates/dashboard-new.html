@@ -15,8 +15,6 @@
     <link rel="stylesheet" href="/static/template/assets/css/style.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="/static/template/assets/images/favicon.png" />
-
-    
   </head>
   <body>
     <div class="container-scroller">
@@ -101,7 +99,43 @@
                     <i class="menu-arrow"></i>
                   </a>
               </li>
-            
+              <!--<li class="nav-item">
+                  <a href="pages/charts/chartjs.html" class="nav-link">
+                    <i class="mdi mdi-finance menu-icon"></i>
+                    <span class="menu-title">Charts</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="pages/tables/basic-table.html" class="nav-link">
+                    <i class="mdi mdi-grid menu-icon"></i>
+                    <span class="menu-title">Tables</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="pages/icons/mdi.html" class="nav-link">
+                    <i class="mdi mdi-emoticon menu-icon"></i>
+                    <span class="menu-title">Icons</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="mdi mdi-codepen menu-icon"></i>
+                    <span class="menu-title">Sample Pages</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+                  <div class="submenu">
+                      <ul class="submenu-item">
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/login.html">Login</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/login-2.html">Login 2</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/register.html">Register</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/register-2.html">Register 2</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/lock-screen.html">Lockscreen</a></li>
+                      </ul>
+                  </div>
+              </li>-->
               <li class="nav-item">
                   <a href="docs/documentation.html" class="nav-link">
                     <i class="mdi mdi-file-document-box-outline menu-icon"></i>
@@ -150,73 +184,57 @@
 					</div>
 					<div class="row">
 						<div class="col-lg-10 flex-column d-flex stretch-card">
-							<div class="row">
-								
-
-                
-								<div class="col-lg-5 d-flex grid-margin stretch-card">
-									
-									<div class="card sale-diffrence-border">
-										<div class="card-body">
-											<div class="row">
-												<div class="col-lg-9">
-													<h2 class="text-dark mb-2 font-weight-bold">Sales DB</h2>
-												</div>
-												<div class="col-lg-3">
-													<div class="dropdown">
-													<a href="#" class="text-success btn btn-link  px-1"><i class="mdi mdi-grease-pencil "></i></a>
-													<a href="#" class="text-success btn btn-link  px-1"><i class="mdi mdi-delete "></i></a>
-												
-												</div>
-												</div>
-											</div>
-											
-											
-											<h4 class="card-title mb-2 mt-2">sales_db</h4> 
-											<small class="text-muted"> 192.168.1.100</small><br>
-<small class="text-muted"> Created: Dec 01, 2024</small><br>
-											<div class="d-flex align-items-center justify-content-between mt-3">
-                      
-<!--<button type="button" class="btn btn-inverse-success btn-fw ">Connect</button><br>-->
-  <button class='btn btn-success pushme2 with-color'>Connect</button>
-<button type="button" class="btn btn-inverse-dark btn-fw">Chat</button><br>
-<button type="button" class="btn btn-link btn-fw">Get Secret</button>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-lg-5 d-flex grid-margin stretch-card">
-									
-									<div class="card sale-visit-statistics-border">
-										<div class="card-body">
-											<div class="row">
-												<div class="col-lg-9">
-													<h2 class="text-dark mb-2 font-weight-bold">Sales DB</h2>
-												</div>
-												<div class="col-lg-3">
-													<div class="dropdown">
-													<a href="#" class="text-success btn btn-link  px-1"><i class="mdi mdi-grease-pencil "></i></a>
-													<a href="#" class="text-success btn btn-link  px-1"><i class="mdi mdi-delete "></i></a>
-												
-												</div>
-												</div>
-											</div>
-											
-										<!--	<h2 class="text-dark mb-2 font-weight-bold">sales_db</h2>-->
-											
-											<h4 class="card-title mb-2 mt-2">sales_db</h4> 
-											<small class="text-muted"> 192.168.1.100</small><br>
-<small class="text-muted"> Created: Dec 01, 2024</small><br>
-											<div class="d-flex align-items-center justify-content-between mt-3">
-<button class='btn btn-success pushme2 with-color'>Connect</button>
-<button type="button" class="btn btn-inverse-dark btn-fw">Chat</button><br>
-<button type="button" class="btn btn-link btn-fw">Get Secret</button>
-											</div>
-										</div>
-									</div>
-								</div>
-								
-							</div>
+							<div class="row" id="connections-data" data-connections="{{ connections }}">
+                {% for connection in connections %}
+                  <div class="col-lg-5 d-flex grid-margin stretch-card">
+                    <div class="card {% if loop.index0 % 2 == 0 %}sale-diffrence-border{% else %}sale-visit-statistics-border{% endif %}">
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-lg-9">
+                            <h2 class="text-dark mb-2 font-weight-bold">{{ connection.name }}</h2>
+                          </div>
+                          <div class="col-lg-3">
+                            <div class="dropdown">
+                              <a href="#" class="text-success btn btn-link px-1 edit-connection" data-connection-id="{{ connection.id }}">
+                                <i class="mdi mdi-grease-pencil"></i>
+                              </a>
+                              <a href="#" class="text-success btn btn-link px-1 delete-connection" data-connection-id="{{ connection.id }}">
+                                <i class="mdi mdi-delete"></i>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+              
+                        <h4 class="card-title mb-2 mt-2">{{ connection.database }}</h4>
+                        <small class="text-muted">{{ connection.host }}</small><br>
+                        <small class="text-muted">Created: {{ connection.created_at.strftime('%b %d, %Y') }}</small><br>
+              
+                        <div class="d-flex align-items-center justify-content-between mt-3">
+                          <button type="button"
+                                  class="btn btn-inverse-success btn-fw connect-btn"
+                                  data-connection-id="{{ connection.id }}"
+                                  data-status="{{ connection.status }}">
+                            {% if connection.status == 'connected' %}Disconnect{% else %}Connect{% endif %}
+                          </button><br>
+              
+                          <button type="button"
+                                  class="btn btn-inverse-dark btn-fw chat-btn"
+                                  data-connection-id="{{ connection.id }}">
+                            Chat
+                          </button><br>
+              
+                          <button type="button"
+                                  class="btn btn-link btn-fw get-secret-btn"
+                                  data-connection-id="{{ connection.id }}">
+                            Get Secret
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+              
 							
 						</div>
 						
@@ -226,7 +244,16 @@
 					
 					
 				</div>
-		
+				<!-- content-wrapper ends -->
+				<!-- partial:partials/_footer.html -->
+				<!--<footer class="footer">
+          <div class="footer-wrap">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © GETO </a>2025</span>
+             
+            </div>
+          </div>
+        </footer>-->
 				<!-- partial -->
 			</div>
 			<!-- main-panel ends -->
@@ -236,10 +263,14 @@
 		<!-- container-scroller -->
     <!-- base:js -->
     <script src="/static/template/vendors/base/vendor.bundle.base.js"></script>
-   
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
     <script src="/static/template/assets/js/template.js"></script>
     <!-- endinject -->
-  
+    <!-- plugin js for this page -->
+    <!-- End plugin js for this page -->
     <script src="/static/template/vendors/chart.js/Chart.min.js"></script>
     <script src="/static/template/vendors/progressbar.js/progressbar.min.js"></script>
 		<script src="/static/template/vendors/chartjs-plugin-datalabels/chartjs-plugin-datalabels.js"></script>
