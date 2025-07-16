@@ -23258,7 +23258,7 @@ dl li {
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
-	    background: #f0f3f6;
+	    /*background: #f0f3f6;*/
 }
 
 .page-body-wrapper.full-page-wrapper {
@@ -23753,7 +23753,7 @@ dl li {
 }
 
 .horizontal-menu .bottom-navbar .page-navigation > .nav-item > .nav-link .menu-title {
-  font-size: 24px;
+  font-size: 20px;
     font-weight: 500;
     display: block;
 }
@@ -24128,7 +24128,7 @@ dl li {
 	    height: 100px;
 }
 .h80:hover {
-	    background: #000;
+	    background: #8d8d8d;
     color: #fff;
 }
 .f18{

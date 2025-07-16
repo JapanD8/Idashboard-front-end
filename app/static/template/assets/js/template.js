@@ -124,3 +124,25 @@
     });
   });
 })(jQuery);
+
+$(document).ready(function(){
+
+  
+    $(".with-color").click(function () {    
+       if($(this).hasClass("btn-success"))
+       {
+       		$(this).addClass("btn-danger");
+       		$(this).removeClass("btn-success");
+       }
+       else{
+       		$(this).addClass("btn-success");
+       		$(this).removeClass("btn-danger");
+       }
+    });
+
+    $(".pushme2").click(function(){
+		$(this).text(function(i, v){
+		   return v === 'Disconnect' ? 'Connect' : 'Disconnect'
+		});
+    });
+});
