@@ -20,6 +20,8 @@
   <link rel="shortcut icon" href="/static/template/assets/images/favicon.png" />
 	<!--chat -->
 	<link rel="stylesheet" href="/static/template/assets/css/chat_style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+
 </head>
 
 <body>
@@ -206,7 +208,6 @@
                                                     <!-- chat-list -->
                                                      <div class="tree-container">
                                                          <ul class="tree" id="treeContainer">
-                                                            <!-- Tree will be populated here -->
                                                              </ul> </div>
                                                     <!-- chat-list -->
                                                 </div>
@@ -412,6 +413,8 @@
   <script src="/static/template/assets/js/select2.js"></script>
 
 <script  src="/static/template/assets/js/chat_script.js"></script>
+<script src="{{ url_for('static', filename='js/chat/chat_sidebar.js') }}"></script>
+
   <!-- End custom js for this page-->
 </body>
 

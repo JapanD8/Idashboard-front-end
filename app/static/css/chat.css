@@ -70,6 +70,7 @@ box-sizing: border-box; /* Include padding in the height calculation */
   margin-top: 1rem;
   overflow-y: auto;
   flex: 1;
+  color: #000;
 }
 
 .tree {
@@ -91,7 +92,7 @@ box-sizing: border-box; /* Include padding in the height calculation */
   top: 0;
   bottom: -10px;
   width: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .tree-item:last-child::before {
@@ -105,7 +106,7 @@ box-sizing: border-box; /* Include padding in the height calculation */
   top: 20px;
   width: 15px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .tree-item.root::before,
@@ -165,13 +166,13 @@ box-sizing: border-box; /* Include padding in the height calculation */
 
 .tree-label {
   font-size: 14px;
-  color: white;
+  color: rgb(5, 5, 5);
   flex-grow: 1;
 }
 
 .tree-type {
   font-size: 11px;
-  color: #b2dfdb;
+  color: #070707;
   background: rgba(255, 255, 255, 0.1);
   padding: 2px 6px;
   border-radius: 10px;
