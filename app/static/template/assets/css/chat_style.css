@@ -784,16 +784,17 @@ ul, #myUL {
 }
 
 .caret::before {
-  content: "\25B6";
+  content: "\ff0b"; 
   color: black;
   display: inline-block;
   margin-right: 6px;
 }
 
 .caret-down::before {
-  -ms-transform: rotate(90deg); /* IE 9 */
-  -webkit-transform: rotate(90deg); /* Safari */
-  transform: rotate(90deg);  
+  content: "\ff0d";
+  color: rgb(77, 77, 77);
+  display: inline-block;
+  margin-right: 6px;
 }
 
 .nested {
