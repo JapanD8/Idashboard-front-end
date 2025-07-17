@@ -63,8 +63,8 @@ let domLoaded = false;
 const urlParams = new URLSearchParams(window.location.search);
 const path = window.location.pathname;
 const chatId = path.split('/').pop();
-console.log(chatId)
-localStorage.setItem('chatId', chatId)
+console.log("chatId",chatId)
+localStorage.setItem('chatId', 1)
 let mockData;
  
 const navigationEntries = performance.getEntriesByType("navigation");
@@ -74,7 +74,7 @@ if (navigationEntries.length > 0 && navigationEntries[0].type === "reload") {
   console.log("Page Loaded (Not Reloaded)");
 }
 
-fetchSchemaById(chatId);
+fetchSchemaById(1);
 
 
 function fetchSchemaById(id) {
