@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
         // Get all db-tile elements
-    const dbTiles = document.querySelectorAll('.db-tile');
+    console.log("Dome entered")
+    const dbTiles = document.querySelectorAll('.col-md-3 .card');
 
     // Get the continue button
-    const continueButton = document.querySelector(".continue-btn"); // Replace with your actual button ID
-
+    //const continueButton = document.querySelector(".btn btn-primary me-2"); // Replace with your actual button ID
+    const continueButton = document.getElementById("db-continue-button");
+    console.log("Dome entered",continueButton)
     // Variable to store the selected db-tile
     let selectedDbTile = null;
 

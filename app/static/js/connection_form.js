@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const continueButton = document.querySelector(".continue-btn");
+    const continueButton = document.getElementById("db-submit-button");
+    console.log("Dome entered",continueButton)
     const urlParams = new URLSearchParams(window.location.search);
     const databaseName = urlParams.get('database');
     const databaseName2 = decodeURIComponent(urlParams.get('database'));
@@ -8,71 +9,76 @@ document.addEventListener("DOMContentLoaded", () => {
    
 
 
-    const backButton = document.querySelector(".exit-btn");
+    const backButton = document.getElementById("exit-btn");
   
     if (backButton) {
         backButton.addEventListener("click", (e) => {
         e.preventDefault();
-        window.location.href = "/add-database";
+        window.location.href = "/dashboard";
       });
     }
 
     continueButton.addEventListener('click', (e) => {
+        e.preventDefault();
         console.log("Button clicked")
-        const name = document.getElementById('name').value.trim();
-        const host = document.getElementById('host').value.trim();
-        const database = document.getElementById('database').value.trim();
-        const user = document.getElementById('user').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const port = document.getElementById('port').value.trim();
+        const nameInput = document.getElementById('name');
+        const name = nameInput.value.trim();
+        const hostInput = document.getElementById('host');
+        const host = hostInput.value.trim();
+        const databaseInput = document.getElementById('database'); // assuming id is 'database', not 'dbname'
+        const database = databaseInput.value.trim();
+        const userInput = document.getElementById('user');
+        const user = userInput.value.trim();
+        const passwordInput = document.getElementById('password');
+        const password = passwordInput.value.trim();
+        const portInput = document.getElementById('port');
+        const port = portInput.value.trim();
 
         let isValid = true;
 
         if (name === '') {
-            document.getElementById('name').nextElementSibling.innerHTML = 'Name is required';
+            nameInput.nextElementSibling.innerHTML = 'Name is required';
             isValid = false;
         } else {
-            document.getElementById('name').nextElementSibling.innerHTML = '';
+            nameInput.nextElementSibling.innerHTML = '';
         }
 
         if (host === '') {
-            document.getElementById('host').nextElementSibling.innerHTML = 'Host is required';
+            hostInput.nextElementSibling.innerHTML = 'Host is required';
             isValid = false;
         } else {
-            document.getElementById('host').nextElementSibling.innerHTML = '';
+            hostInput.nextElementSibling.innerHTML = '';
         }
 
         if (database === '') {
-            document.getElementById('database').nextElementSibling.innerHTML = 'Database is required';
+            databaseInput.nextElementSibling.innerHTML = 'Database is required';
             isValid = false;
         } else {
-            document.getElementById('database').nextElementSibling.innerHTML = '';
+            databaseInput.nextElementSibling.innerHTML = '';
         }
 
+        // do the same for user, password, and port
         if (user === '') {
-            document.getElementById('user').nextElementSibling.innerHTML = 'User is required';
+            userInput.nextElementSibling.innerHTML = 'User is required';
             isValid = false;
         } else {
-            document.getElementById('user').nextElementSibling.innerHTML = '';
+            userInput.nextElementSibling.innerHTML = '';
         }
 
         if (password === '') {
-            document.getElementById('password').nextElementSibling.innerHTML = 'Password is required';
+            // you might not want to require password, depending on your use case
+            passwordInput.nextElementSibling.innerHTML = 'Password is required';
             isValid = false;
         } else {
-            document.getElementById('password').nextElementSibling.innerHTML = '';
+            passwordInput.nextElementSibling.innerHTML = '';
         }
 
         if (port === '') {
-            document.getElementById('port').nextElementSibling.innerHTML = 'Port is required';
-            isValid = false;
-        } else if (isNaN(port) || port < 1 || port > 65535) {
-            document.getElementById('port').nextElementSibling.innerHTML = 'Invalid port number';
+            portInput.nextElementSibling.innerHTML = 'Port is required';
             isValid = false;
         } else {
-            document.getElementById('port').nextElementSibling.innerHTML = '';
+            portInput.nextElementSibling.innerHTML = '';
         }
-
         if (isValid) {
             // Form is valid, submit it or perform further actions
             console.log('Form is valid');
@@ -99,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(response => {
                 if (response.status === 200) {
-                    window.location.href = '/databases'; // Redirect to another page
+                    window.location.href = '/dashboard'; // Redirect to another page
                 } else {
                     console.error('Error:', response.status);
                 }
@@ -107,6 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
             .catch(error => console.error('Error:', error));
         }
 
-        
+
         });
 });

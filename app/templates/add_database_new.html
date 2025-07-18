@@ -214,14 +214,14 @@
                    
                    <div class="mt-5 text-center mb-3">
 				
-                    <button type="button" class="btn btn-primary me-2" onclick="window.location.href='add_database_form.html'">Submit</button>
-                    <button class="btn btn-light">Cancel</button></div>
+                    <button type="button" class="btn btn-primary me-2"  id="db-continue-button" >Continue</button>
+                    <button class="btn btn-light" id="exit-btn">Cancel</button></div>
                   </form>
                 </div>
               </div>
             </div>
            
-           <div class="col-md-2"></div>
+          <div class="col-md-2"></div>
           </div>
         </div>
         <!-- content-wrapper ends -->
@@ -256,10 +256,11 @@
   <!-- Custom js for this page-->
   <script src="/static/template/assets/js/file-upload.js"></script>
   <script src="/static/template/assets/js/typeahead.js"></script>
-  <script src="/static/template/assets/js/select2.js"></script>
+
+  <script src="{{ url_for('static', filename='js/db_selector.js') }}"></script>
   <!-- End custom js for this page-->
 
-<script>
+ <!--<script>
 document.addEventListener("DOMContentLoaded", function () {
   const cards = document.querySelectorAll(".col-md-3 .card");
 
@@ -273,7 +274,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-</script>
+</script>-->
 <style>
 .card.selected {
   border: 2px solid #007bff; /* blue border */

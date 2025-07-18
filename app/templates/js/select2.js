@@ -10,7 +10,7 @@
 })(jQuery);
 
 //chat
-<script id="message-template" type="text/x-handlebars-template">
+{/* <script id="message-template" type="text/x-handlebars-template">
   <li class="clearfix">
     <div class="message-data align-right">
       <span class="message-data-time" >{{time}}, Today</span> &nbsp; &nbsp;
@@ -32,7 +32,7 @@
       {{response}}
     </div>
   </li>
-</script>
+</script> */}
 
 
 (function(){
