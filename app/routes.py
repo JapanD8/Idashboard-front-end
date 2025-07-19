@@ -121,8 +121,13 @@ def login():
 @main.route("/dashboard")
 @login_required
 def dashboard():
-    #return f"Welcome {current_user.email}"
-    return render_template("dashboard-new.html", email=current_user.email)
+    if current_user.is_authenticated:
+        connections = Connection.query.filter_by(user_id=current_user.id).all()
+        print(connections)
+        
+        return render_template('dashboard-new.html', connections=connections, email=current_user.email)
+    else:
+        return redirect(url_for('/login'))
 
 
 @main.route("/databases")
@@ -441,7 +446,7 @@ def query_database():
 @main.route("/chat/<chat_id>")
 @login_required
 def chat_form(chat_id):
-    return render_template("chat.html",chat_id=chat_id)
+    return render_template("chat-new.html",chat_id=chat_id)
 
 
 @main.route('/get_messages', methods=['GET'])

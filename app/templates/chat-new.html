@@ -82,7 +82,7 @@
         <div class="container">
             <ul class="nav page-navigation">
               <li class="nav-item">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="/databases">
                   <i class="mdi mdi-file-document-box menu-icon"></i>
                   <span class="menu-title">Database </span>
                 </a>
@@ -157,7 +157,7 @@
         <!-- partial -->
     <div class="container-fluid page-body-wrapper">
       <div class="main-panel">
-          <!-- chat-area -->
+          <!-- chat-area --> 
     <section class="message-area">
         <div class="container">
             <div class="row">
@@ -166,11 +166,11 @@
                         <!-- chatlist -->
                         <div class="chatlist">
                             <div class="modal-dialog-scrollable">
-                                <div class="modal-content">
+                                <div class="modal-content p-0">
                                     <div class="chat-header">
 										<div class="form-group">
                     <label for="exampleFormControlSelect1">Select a Model</label>
-                    <select class="form-control form-control-lg" id="exampleFormControlSelect1">
+                    <select class="form-control form-control-lg" id="model-select">
                       <option>Gemini 2.1 Flash</option>
                       <option>2</option>
                       <option>3</option>
@@ -187,58 +187,36 @@
                                         <div class="msg-search">
 											
                                             <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" aria-label="search">
-                                            <a class="add" href="#"><img class="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add"></a>
+                                           <!-- <a class="add" href="#"><img class="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/add.svg" alt="add"></a>-->
                                         </div>
 
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <!--<ul class="nav nav-tabs" id="myTab" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link active" id="Open-tab" data-bs-toggle="tab" data-bs-target="#Open" type="button" role="tab" aria-controls="Open" aria-selected="true">Open</button>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <button class="nav-link" id="Closed-tab" data-bs-toggle="tab" data-bs-target="#Closed" type="button" role="tab" aria-controls="Closed" aria-selected="false">Closed</button>
                                             </li>
-                                        </ul>
-                                    </div>
+                                        </ul>-->
+                                         </div>
 
-                                    <div class="modal-body">
+                                    <div class="modal-body p-0">
                                         <!-- chat-list -->
                                         <div class="chat-lists">
-                                            <div class="tab-content" id="myTabContent">
+                                            <!-- chat-list -->
+                                            <div class="tree-container">
+                                                <ul class="tree" id="treeContainer">
+                                                    </ul> </div>
+                                           <!-- chat-list -->
+                                            <!-- <div class="tab-content" id="myTabContent">
                                                 <div class="tab-pane fade show active" id="Open" role="tabpanel" aria-labelledby="Open-tab">
-                                                    <!-- chat-list -->
-                                                     <div class="tree-container">
-                                                         <ul class="tree" id="treeContainer">
-                                                             </ul> </div>
-                                                    <!-- chat-list -->
+                                                    
                                                 </div>
                                                 <div class="tab-pane fade" id="Closed" role="tabpanel" aria-labelledby="Closed-tab">
 
-                                                    <!-- chat-list -->
-                                                    <ul id="myUL">
-  <li><span class="caret">Beverages</span>
-    <ul class="nested">
-      <li>Water</li>
-      <li>Coffee</li>
-      <li><span class="caret">Tea</span>
-        <ul class="nested">
-          <li>Black Tea</li>
-          <li>White Tea</li>
-          <li><span class="caret">Green Tea</span>
-            <ul class="nested">
-              <li>Sencha</li>
-              <li>Gyokuro</li>
-              <li>Matcha</li>
-              <li>Pi Lo Chun</li>
-            </ul>
-          </li>
-        </ul>
-      </li>  
-    </ul>
-  </li>
-</ul>
-                                                    <!-- chat-list -->
+                                                    
                                                 </div>
-                                            </div>
+                                            </div>-->
 
                                         </div>
                                         <!-- chat-list -->
@@ -258,9 +236,9 @@
                                         <div class="row">
                                             <div class="col-8">
                                                 <div class="d-flex align-items-center">
-                                                    <span class="chat-icon"><img class="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/arroleftt.svg" alt="image title"></span>
+                                                    <span class="chat-icon"><img class="img-fluid" src="/static/template/assets/images/faces/face28.png" alt="image title"></span>
                                                     <div class="flex-shrink-0">
-                                                        <img class="img-fluid" src="https://mehedihtml.com/chatbox/assets/img/user.png" alt="user img">
+                                                        <img class="img-fluid" src="/static/template/assets/images/faces/face28.png" alt="user img">
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <h3>Mehedi Hasan</h3>
@@ -289,56 +267,19 @@
 
                                     <div class="modal-body">
                                         <div class="msg-body">
-                                            <ul>
-                                                <li class="sender">
-                                                    <p> Hey, Are you there? </p>
-                                                    <span class="time">10:06 am</span>
-                                                </li>
-                                                <li class="sender">
-                                                    <p> Hey, Are you there? </p>
-                                                    <span class="time">10:16 am</span>
-                                                </li>
-                                                <li class="repaly">
-                                                    <p>yes!</p>
-                                                    <span class="time">10:20 am</span>
-                                                </li>
-                                                <li class="sender">
-                                                    <p> Hey, Are you there? </p>
-                                                    <span class="time">10:26 am</span>
-                                                </li>
-                                                <li class="sender">
-                                                    <p> Hey, Are you there? </p>
-                                                    <span class="time">10:32 am</span>
-                                                </li>
-                                                <li class="repaly">
-                                                    <p>How are you?</p>
-                                                    <span class="time">10:35 am</span>
-                                                </li>
-                                                <li>
-                                                    <div class="divider">
-                                                        <h6>Today</h6>
-                                                    </div>
-                                                </li>
-
-                                                <li class="repaly">
-                                                    <p> yes, tell me</p>
-                                                    <span class="time">10:36 am</span>
-                                                </li>
-                                                <li class="repaly">
-                                                    <p>yes... on it</p>
-                                                    <span class="time">junt now</span>
-                                                </li>
-
+                                            <ul id="chat-messages">
+                                                <!-- Dynamic messages will be appended here -->
                                             </ul>
                                         </div>
                                     </div>
 
 
+
                                     <div class="send-box">
                                         <form action="">
-                                            <input type="text" class="form-control" aria-label="message…" placeholder="Write message…">
+                                            <input type="text"  id="chat-input" class="form-control" aria-label="message…" placeholder="Write message…">
 
-                                            <button type="button"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</button>
+                                            <button type="button" id="send-chat"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</button>
                                         </form>
 
                                        <!-- <div class="send-btns">
@@ -414,7 +355,11 @@
 
 <script  src="/static/template/assets/js/chat_script.js"></script>
 <script src="{{ url_for('static', filename='js/chat/chat_sidebar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat/chat_div.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script> 
 
   <!-- End custom js for this page-->
 </body>
+
 

@@ -64,7 +64,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const path = window.location.pathname;
 const chatId = path.split('/').pop();
 console.log("chatId",chatId)
-localStorage.setItem('chatId', 1)
+localStorage.setItem('chatId', chatId)
 let mockData;
  
 const navigationEntries = performance.getEntriesByType("navigation");
@@ -74,7 +74,7 @@ if (navigationEntries.length > 0 && navigationEntries[0].type === "reload") {
   console.log("Page Loaded (Not Reloaded)");
 }
 
-fetchSchemaById(1);
+fetchSchemaById(chatId);
 
 
 function fetchSchemaById(id) {
@@ -251,6 +251,14 @@ allTreeItems.forEach(item => {
 // Initialize the tree on page load
 window.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded");
+
+    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
+    // Logout functionality
+    logoutButton.addEventListener('click', () => {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/login'; // redirect to login page
+    });
  
     domLoaded = true;
     if (dataLoaded) {

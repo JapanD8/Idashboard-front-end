@@ -115,4 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         });
+
+
+    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
+    // Logout functionality
+    logoutButton.addEventListener('click', () => {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/login'; // redirect to login page
+    });
 });

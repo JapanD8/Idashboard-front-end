@@ -219,7 +219,7 @@ box-sizing: border-box; /* Include padding in the height calculation */
 
 }
 
-#chat-input {
+/* #chat-input {
   width: 75%;
   padding: 1rem;
   border-radius: 25px;
@@ -233,13 +233,13 @@ box-sizing: border-box; /* Include padding in the height calculation */
 
 #chat-messages {
   padding: 10px;
-}
+} */
 
-.message {
+/* .message {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-}
+} */
 
 .user-icon, .ai-icon {
   width: 30px;
@@ -368,12 +368,12 @@ box-sizing: border-box; /* Include padding in the height calculation */
 
 .expanded-view-options {
   position: relative;
-  left: 600px;
+  left: 500px;
   margin-top: -375px;
   background-color: #fff;
   border: 1px solid #ddd;
   padding: 10px;
-  width: 110px;
+  width: 130px;
 }
 
 .option-btn {
@@ -386,4 +386,24 @@ box-sizing: border-box; /* Include padding in the height calculation */
 
 .option-btn:hover {
   background-color: #f0f0f0;
+}
+
+
+.tree-icon2 {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  user-select: none;
+  display: none !important;
+}
+
+.tree-label2 {
+  font-size: 14px;
+  color: rgb(5, 5, 5);
+  flex-grow: 1;
+  margin-left: 34px;
 }

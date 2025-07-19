@@ -4,19 +4,17 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM is fully loaded'); // Add this line to verify the DOM is loaded
     //initBackground();
     // Only auto-run if not suppressed
-    if (!window.__DISABLE_AUTO_BACKGROUND__) {
-      initBackground();
-  }
-
+ 
     const connectionsContainer = document.getElementById('connections-data');
     const connections = connectionsContainer.getAttribute('data-connections');
     console.log(connections);
     console.log(typeof connections);
 
-    const deleteIcons = document.querySelectorAll('.delete-icon');
-    const editIcons = document.querySelectorAll('.edit-icon');
+    const deleteIcons = document.querySelectorAll('.text-success.btn.btn-link.px-1.delete-connection');
+    const editIcons = document.querySelectorAll('.text-success.btn.btn-link.px-1.edit-connection');
 
-    console.log(deleteIcons); // Log the NodeList to verify it's correct
+    console.log("deleteIcons",deleteIcons); // Log the NodeList to verify it's correct
+    console.log("editIcons",editIcons)
 
     const confirmModal = document.getElementById('confirmModal');
     const editModal = document.getElementById('edit-modal');
@@ -139,14 +137,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // Event listener for delete icons
+    
+    console.log('Number of delete icons found:', deleteIcons.length);
+
     deleteIcons.forEach(icon => {
+        console.log('Attaching event listener to:', icon);
         icon.addEventListener('click', function(event) {
-            event.stopPropagation(); // Prevent any parent event handlers from being triggered
+            event.stopPropagation(); 
             const connectionId = this.getAttribute('data-connection-id');
-            console.log('Delete icon clicked with connection ID:', connectionId); // Log the connection ID
+            console.log('Delete icon clicked with connection ID:', connectionId); 
             openModal(connectionId);
         });
-    });
+    })
 
     // Event listener for close button
     closeBtn.addEventListener('click', closeModal);
@@ -193,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     //chat button
-    const chatButtons = document.querySelectorAll('.chat-btn');
+    const chatButtons = document.querySelectorAll('.btn.btn-inverse-dark.btn-fw.chat-btn');
     console.log(chatButtons); 
 
     chatButtons.forEach(button => {
@@ -219,34 +221,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // const chatButtons = document.querySelectorAll('.chat-btn');
 
-    document.querySelectorAll('.connect-btn').forEach(button => {
+    document.querySelectorAll('.btn.btn-inverse-success.btn-fw.connect-btn.pushme2').forEach(button => {
         const connectionId = button.getAttribute('data-connection-id');
         const savedStatus = sessionStorage.getItem(`conn_status_${connectionId}`);
         const label = document.getElementById(`label-${connectionId}`);
         const colorname = label?.getAttribute('data-name') || '';
-
+        console.log("connectionId,savedStatus,label, colorname",connectionId,"-",savedStatus,"-",label,"-", colorname)
         if (savedStatus === 'connected') {
             button.textContent = 'Disconnect';
             button.setAttribute('data-status', 'connected');
-            button.style.backgroundColor = '#dc3545'; // red
+            //button.style.backgroundColor = '#dc3545'; // red
             if (label) label.textContent = `🟢 ${colorname}`;
         } else if (savedStatus === 'disconnected') {
             button.textContent = 'Connect';
             button.setAttribute('data-status', 'disconnected');
-            button.style.backgroundColor = '#406c99 !important'; // green
+            //button.style.backgroundColor = '#406c99 !important'; // green
             if (label) label.textContent = `🔴 ${colorname}`;
         }
     });
 
     
     // Event listener for connect/disconnect buttons
-    const connectButtons = document.querySelectorAll('.connect-btn');
+    const connectButtons = document.querySelectorAll('.btn.btn-inverse-success.btn-fw.connect-btn.pushme2');
 
     connectButtons.forEach(button => {
     button.addEventListener('click', function () {
         const connectionId = this.getAttribute('data-connection-id');
         const status = this.getAttribute('data-status');
         const label = document.getElementById(`label-${connectionId}`);
+        console.log(label,connectionId)
         const colorname = label.getAttribute('data-name');
 
         if (!status) {
@@ -278,7 +281,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (status === 'connected') {
                     this.textContent = 'Connect';
                     this.setAttribute('data-status', 'disconnected');
-                    this.style.backgroundColor = '#282d36'; // green
 
                     // ✅ Save state in sessionStorage
                     sessionStorage.setItem(`conn_status_${connectionId}`, 'disconnected');
@@ -289,7 +291,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     this.textContent = 'Disconnect';
                     this.setAttribute('data-status', 'connected');
-                    this.style.backgroundColor = '#dc3545'; // red
 
                     // ✅ Save state in sessionStorage
                     sessionStorage.setItem(`conn_status_${connectionId}`, 'connected');
@@ -314,7 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
      
     
-    const getSecretLabels = document.querySelectorAll('.get-secret-label');
+    const getSecretLabels = document.querySelectorAll('.btn.btn-link.btn-fw.get-secret-btn');
 
     getSecretLabels.forEach(label => {
       label.addEventListener('click', function(event) {
@@ -362,4 +363,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
        
     };
+
+    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
+    // Logout functionality
+    logoutButton.addEventListener('click', () => {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/login'; // redirect to login page
+    });
 });

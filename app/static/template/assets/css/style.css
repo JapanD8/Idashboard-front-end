@@ -9026,6 +9026,9 @@ button:not(:disabled),
 [type="reset"]:not(:disabled),
 [type="submit"]:not(:disabled) {
   cursor: pointer;
+  border-radius: 5px;
+  border: 1px;
+
 }
 
 ::-moz-focus-inner {
@@ -14393,6 +14396,7 @@ fieldset:disabled .btn {
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   outline: 0;
+  padding: 30px;
 }
 
 .modal-backdrop {
@@ -22584,7 +22588,8 @@ dl li {
 .tab-content {
   border: 1px solid #f1f6f8;
   border-top: 0;
-  padding: 2rem 1rem;
+  padding: 10px;
+ /* padding: 2rem 1rem;*/
   text-align: justify;
 }
 
@@ -24197,8 +24202,32 @@ dl li {
 .toggle-checkbox:checked ~ .slider > .toggle-switch.opt2 {
   display: inline-block;
 }
-  
+ 
 
 	
 }
 /*# sourceMappingURL=maps/style.css.map */
+
+
+.db-subtitle{
+  font-size: 20px !important;
+  font-weight: 100 !important;
+}
+
+.db-title{
+  font-size: 22px !important;
+  font-weight: 600 !important;  
+}
+
+.updatedb-title{
+  color: #001737 !important; 
+  margin-bottom: 1.5rem !important;
+  text-transform: capitalize;
+  font-size: 25px !important;
+  font-weight: 600 !important;
+}
+.secret-key{
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+}

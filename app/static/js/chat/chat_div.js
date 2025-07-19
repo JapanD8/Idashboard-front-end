@@ -132,57 +132,64 @@ document.addEventListener('DOMContentLoaded', function() {
     let user_messageicon = "U"
     const sesionemail = localStorage.getItem('email');
     console.log("sesionemail",sesionemail)
-    if (sesionemail) {
-        user_messageicon = sesionemail.charAt(0).toUpperCase();
-   
-    }
+    const msgBody = document.querySelector('.msg-body ul');
+    msgBody.innerHTML = '';
+    let messagesLoaded = false;
 
 
     function loadHistory() {
-        const params = new URLSearchParams({ session_id: sessionId, db_id:dbId});
+        const params = new URLSearchParams({ session_id: sessionId, db_id: dbId });
         fetch(`/get_messages?${params}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
         })
         .then(response => response.json())
         .then(data => {
+             // Clear existing messages
+            console.log("data2",data)
             data.forEach(message => {
+                messagesLoaded = true;
                 if (message.sender === 'user') {
-                    const loaduserMessage = document.createElement('div');
-                    loaduserMessage.classList.add('message', 'user-message');
-                    loaduserMessage.innerHTML = `
-                        <span class="message-text">${message.message}</span>
-                        <span class="user-icon">${user_messageicon}</span>
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('repaly'); // Assuming user is the one replying
+                    //<span class="time">${formatTime(message.timestamp)}</span>
+                    listItem.innerHTML = `
+                        <p>${message.message}</p>
                     `;
-                    chatMessages.appendChild(loaduserMessage);
-                    scrollToBottom()
-                } else if (message.sender === 'Ai'){
-                    const loadAiMessage = document.createElement('div');
-                    loadAiMessage.classList.add('message', 'ai-message');
-                    loadAiMessage.innerHTML = `
-                        <span class="ai-icon">AI</span>
-                        <span class="message-text">${message.message}</span>
+                    msgBody.appendChild(listItem);
+                   
+                } else if (message.sender === 'Ai') {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('sender');
+                    listItem.innerHTML = `
+                        <p>${message.message}</p>
                     `;
-                    chatMessages.appendChild(loadAiMessage);
-                    scrollToBottom()
-                } else{
-                    console.log("message.chart_data",message.message, message.embed_id);
-                    if (message.message && Object.keys(message.message).length > 0){
+                    msgBody.appendChild(listItem);
+                } else {
+                    // Handle other types of messages (e.g., charts)
+                    if (message.message && Object.keys(message.message).length > 0) {
                         let chart_type = message.message.chart_type;
-                        console.log("chart_type",chart_type)
-                        if (chart_type !== undefined && chart_type !== null){
-                        console.log("chart_type,message.message.chart_data",chart_type,message.message.chart_data)
-                        displayChart(chart_type, message.message.chart_data, message.embed_id);
+                        if (chart_type !== undefined && chart_type !== null) {
+                            displayChart(chart_type, message.message.chart_data, message.embed_id);
                         }
-                    
                     }
                 }
-                //messageElement.innerHTML = innerhtml;
-               
             });
+    
+            // // Add a divider for today's messages if needed
+            // const todayDivider = document.createElement('li');
+            // todayDivider.innerHTML = `
+            //     <div class="divider">
+            //         <h6>Today</h6>
+            //     </div>
+            // `;
+            // msgBody.appendChild(todayDivider); // Uncomment if needed
+    
+            scrollToBottom(); // Assuming this function scrolls the chat to the bottom
         });
     }
     loadHistory();
+    
     if (!sessionId) {
         // Create a new session ID if it doesn't exist
         fetch('/create_chat_session', {
@@ -198,37 +205,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function scrollToBottom() {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        const msgBodyContainer = document.querySelector('.msg-body li');
+        msgBodyContainer.scrollTo({
+            top: msgBodyContainer.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 
+
     // Initial message from AI
-    if (!chatMessages.hasChildNodes()) {
-        const aiInitialMessage = document.createElement('div');
-        aiInitialMessage.classList.add('message', 'ai-message');
+    // if (!chatMessages.hasChildNodes()) {
+    //     const aiInitialMessage = document.createElement('div');
+    //     aiInitialMessage.classList.add('message', 'ai-message');
+    //     aiInitialMessage.innerHTML = `
+    //         <span class="ai-icon">AI</span>
+    //         <span class="message-text">Hi! How can I assist you today?</span>
+    //     `;
+    //     chatMessages.appendChild(aiInitialMessage);
+    //     scrollToBottom();
+    // }
+    const senders = msgBody.querySelectorAll('.sender');
+    const replies = msgBody.querySelectorAll('.repaly')
+    console.log("Number of senders:", senders.length);
+    console.log("Number of replies:", replies.length);
+    console.log("msgBody",msgBody); // Log the msgBody element itself
+    console.log("msgBody.innerHTML",msgBody.innerHTML); // Log the innerHTML of msgBody
+    console.log("msgBody.children",msgBody.childNodes);
+    console.log("msgBody.children.length",chatMessages.childNodes)
+    console.log("messagesLoaded",messagesLoaded)
+    if (msgBody.children.length === 0) {
+        const aiInitialMessage = document.createElement('li');
+        aiInitialMessage.classList.add('sender');//<span class="time">${formatTime(new Date().getTime())}</span>
         aiInitialMessage.innerHTML = `
-            <span class="ai-icon">AI</span>
-            <span class="message-text">Hi! How can I assist you today?</span>
+            <p>Hi! How can I assist you today?</p>
         `;
-        chatMessages.appendChild(aiInitialMessage);
+        msgBody.appendChild(aiInitialMessage);
         scrollToBottom();
     }
+
+
+
     // Function to send the message to the endpoint
     function sendMessage() {
         const message = chatInput.value.trim();
+        console.log("chatInput-message",message)
         chatInput.value = '';
         const storedData = sessionStorage.getItem('mockdata-'+dbId);
         const schemadata = JSON.parse(storedData);
         
 
         // Create a new message element for the user's message
-        const userMessage = document.createElement('div');
-        userMessage.classList.add('message', 'user-message');
-        userMessage.innerHTML = `
-            <span class="message-text">${message}</span>
-            <span class="user-icon">${user_messageicon}</span>
+        // const userMessage = document.createElement('div');
+        // userMessage.classList.add('message', 'user-message');
+        // userMessage.innerHTML = `
+        //     <span class="message-text">${message}</span>
+        //     <span class="user-icon">${user_messageicon}</span>
+        // `;
+        // chatMessages.appendChild(userMessage);
+
+        const listItem = document.createElement('li');
+        listItem.classList.add('repaly'); // Assuming user is the one replying
+        //<span class="time">${formatTime(message.timestamp)}</span>
+        listItem.innerHTML = `
+            <p>${message}</p>
         `;
-        chatMessages.appendChild(userMessage);
-        scrollToBottom();
+        msgBody.appendChild(listItem);
 
         // Send the message to the endpoint
        
@@ -243,14 +284,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const responseData = data.data;
                 console.log( data.data, data.data)
                 // Create a new message element for the response
-                const aiMessage = document.createElement('div');
-                aiMessage.classList.add('message', 'ai-message');
-                aiMessage.innerHTML = `
-                    <span class="ai-icon">AI</span>
-                    <span class="message-text">${responseData.message}</span>
+                const listItem = document.createElement('li');
+                listItem.classList.add('sender');
+                listItem.innerHTML = `
+                    <p>${data.data.message}</p>
                 `;
-                chatMessages.appendChild(aiMessage);
-                scrollToBottom();
+                msgBody.appendChild(listItem);
 
                 // Display the chart
                 if (responseData.chart_type !== undefined && responseData.chart_type !== null){
@@ -777,8 +816,13 @@ document.addEventListener('DOMContentLoaded', function() {
     domLoaded = true;
     console.log("domLoaded",domLoaded)
 
+  
+    document.getElementById('send-chat').addEventListener('click', sendMessage);
+
+
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+            e.preventDefault();
             sendMessage();
         }
     });

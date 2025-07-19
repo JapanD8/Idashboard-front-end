@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
       userModal.classList.toggle("show");
     });
 
-    const logoutButton = userModal.querySelector('.bx-log-out').parentNode;
+    console.log("logoutButton",logoutButton)
 
     userIcon.addEventListener('click', () => {
       userModal.style.display = userModal.style.display === 'block' ? 'none' : 'block';
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     userModal.addEventListener('click', (event) => {
       event.stopPropagation();
     });
-
+    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
     // Logout functionality
     logoutButton.addEventListener('click', () => {
       sessionStorage.clear();
