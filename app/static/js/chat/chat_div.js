@@ -305,9 +305,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('model-select').addEventListener('change', function() {
         var selectedOption = this.options[this.selectedIndex];
         if (selectedOption.getAttribute('data-popup') === 'true') {
-          alert('You selected ' + selectedOption.text + " will work in beta version");
+          alert('You selected ' + selectedOption.text + " will work in future versions");
           // You can replace the alert with your own popup logic
-          this.selectedIndex = 4; // Reset the selection to the first option
+          this.selectedIndex = 0; // Reset the selection to the first option
         }
       });
 
