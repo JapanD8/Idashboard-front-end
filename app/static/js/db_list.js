@@ -335,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+          console.log("secretdata",data)
           if (data) {
             // Show modal with secret key and expire time
             const secretKeyModal = new bootstrap.Modal(document.getElementById('secret-key-modal'));
