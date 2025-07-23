@@ -149,3 +149,16 @@ $(document).ready(function(){
 		});
     });
 });
+
+
+
+document.querySelectorAll('.delete-connection').forEach(btn => {
+  btn.addEventListener('click', function () {
+    $('#confirmModal').modal('show');
+  });
+});
+
+// Close modal manually when .close is clicked
+document.querySelector('#confirmModal .close').addEventListener('click', function () {
+  $('#confirmModal').modal('hide');
+});

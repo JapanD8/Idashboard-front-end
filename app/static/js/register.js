@@ -78,7 +78,8 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault(); // ✅ Prevent form from submitting again
 
     const email = form.email.value.trim();
-    const password = form.password.value.trim();
+    //const password = form.password.value.trim();
+    const password = document.getElementById('password').value;
 
     console.log("🔁 Registering:", { email, password });
 

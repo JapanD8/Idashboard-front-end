@@ -24134,11 +24134,12 @@ dl li {
     font-size: 30px !important;
 }
 .h80{
-	    /*height: 100px;*/
+	    height: 100px;
+      text-align: center;
 }
 .h80:hover {
-	    background: #8d8d8d;
-    color: #fff;
+	    background: #e9e5ff;
+   /* color: #fff;*/
 }
 .f18{
 	    font-size: 18px;
@@ -24230,4 +24231,14 @@ dl li {
   font-size: 22px !important;
   font-weight: 600 !important;
   color: #000 !important;
+}
+.secret-text{
+  padding: 30px;
+  font-size: 20px;
+  text-align: center;
+  line-height: 40px;
+}
+
+#loginSuccessAlert {
+  transition: opacity 0.3s ease;
 }

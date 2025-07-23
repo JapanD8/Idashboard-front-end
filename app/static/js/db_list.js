@@ -18,25 +18,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const confirmModal = document.getElementById('confirmModal');
     const editModal = document.getElementById('edit-modal');
-    const closeBtn = document.querySelector('.close');
+    //const closeBtn = document.querySelector('.close');
+    const closesecret = document.getElementById('close-btn');
     const cancelBtn = document.getElementById('cancelDeleteBtn');
     const confirmBtn = document.getElementById('confirmDeleteBtn');
+    console.log("confirmBtn",confirmBtn)
+    console.log("cancelBtn",cancelBtn)
     let currentConnectionId = null;
 
     // Function to open the modal
     function openModal(connectionId) {
-        currentConnectionId = connectionId;
-        confirmModal.style.display = 'block';
-        console.log('Modal opened for connection ID:', connectionId); // Log that the modal is opened
+      currentConnectionId = connectionId;
+      $('#confirmModal').modal('show');
+      console.log('Modal opened for connection ID:', connectionId);
+    }
+    
+    function closeModal() {
+      currentConnectionId = null;
+      $('#confirmModal').modal('hide');
+      console.log('Modal closed');
     }
 
-    // Function to close the modal
-    function closeModal() {
-        currentConnectionId = null;
-        confirmModal.style.display = 'none';
-        console.log('Modal closed'); // Log that the modal is closed
     
-    }
     function editcloseModal() {
         currentConnectionId = null;
         editModal.style.display = 'none';
@@ -151,10 +154,21 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 
     // Event listener for close button
-    closeBtn.addEventListener('click', closeModal);
+    //closesecret.addEventListener('click', closeModal);
 
     // Event listener for cancel button
     cancelBtn.addEventListener('click', closeModal);
+
+    cancelBtn.addEventListener('click', function() {
+      console.log("secretKeyModal close called")
+      const secretKeyModal = bootstrap.Modal.getInstance(document.getElementById('secret-key-modal'));
+      console.log("secretKeyModal",secretKeyModal)
+      if (secretKeyModal) {
+        secretKeyModal.hide();
+      } else {
+        document.getElementById('secret-key-modal').style.display = 'none';
+      }
+    });
 
 
     // Event listener for confirm button
@@ -349,8 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    document.querySelector('.btn-secondary').addEventListener('click', function() {
+    console.log("closesecret",closesecret)
+    closesecret.addEventListener('click', function() {
+      console.log("secretKeyModal close called")
       const secretKeyModal = bootstrap.Modal.getInstance(document.getElementById('secret-key-modal'));
+      console.log("secretKeyModal",secretKeyModal)
       if (secretKeyModal) {
         secretKeyModal.hide();
       } else {

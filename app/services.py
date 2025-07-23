@@ -71,7 +71,7 @@ def re_get_connection(connection_id, user_id):
     connection = Connection.query.filter_by(id=connection_id, user_id=user_id).first()
     
     if not connection:
-         return {}, connection_id, e
+         return {}, connection_id, "cannnot connect to db"
 
     try:
         print(repr(connection.name))

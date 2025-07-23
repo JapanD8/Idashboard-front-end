@@ -17,7 +17,7 @@
   <!-- inject:css -->
   <link rel="stylesheet" href="/static/template/assets/css/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="/static/template/assets/images/favicon.png" />
+  <link rel="shortcut icon" href="/static/template/images/favicon.ico" />
 	<!--chat -->
 	<link rel="stylesheet" href="/static/template/assets/css/chat_style.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
@@ -45,15 +45,15 @@
               </li>	
             </ul>
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo ml-5" href="index.html"><img src="/static/template/assets/images/logo_black.png" alt="logo"/></a>
-                <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/static/template/assets/images/logo_black.png" alt="logo"/></a>
+                <a class="navbar-brand brand-logo ml-5" href="#"><img src="/static/template/assets/images/logo_black.png" alt="logo"/></a>
+                <a class="navbar-brand brand-logo-mini" href="#"><img src="/static/template/assets/images/logo_black.png" alt="logo"/></a>
             </div>
             <ul class="navbar-nav navbar-nav-right">
                 
                
-                <li class="nav-item dropdown d-lg-flex d-none">
+                <!-- <li class="nav-item dropdown d-lg-flex d-none">
                   <button type="button" class="btn  btn-sm"><i class="mdi mdi-message-reply-text"></i>Help</button>
-                </li>
+                </li> -->
                 <li class="nav-item nav-profile dropdown">
                   <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
                     <span class="nav-profile-name"></span>
@@ -101,7 +101,7 @@
                   </div>--> 
               </li>
               <li class="nav-item">
-                  <a href="pages/forms/basic_elements.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="mdi mdi-chart-areaspline menu-icon"></i>
                     <span class="menu-title">Reports</span>
                     <i class="menu-arrow"></i>
@@ -145,7 +145,7 @@
                   </div>
               </li>-->
               <li class="nav-item">
-                  <a href="documentation.html" class="nav-link">
+                  <a href="#" class="nav-link">
                     <i class="mdi mdi-file-document-box-outline menu-icon"></i>
                     <span class="menu-title">Documentation</span></a>
               </li>
@@ -241,8 +241,8 @@
                                                         <img class="img-fluid" src="/static/template/assets/images/faces/face28.png" alt="user img">
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
-                                                        <h3>Mehedi Hasan</h3>
-                                                        <p>front end developer</p>
+                                                      <!--<h3>Mehedi Hasan</h3>
+                                                        <p>front end developer</p> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -266,7 +266,7 @@
 
 
                                     <div class="modal-body">
-                                        <div class="msg-body">
+                                        <div class="msg-body"  id="scroll-container">
                                             <ul id="chat-messages">
                                                 <!-- Dynamic messages will be appended here -->
                                             </ul>

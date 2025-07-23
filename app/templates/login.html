@@ -1,48 +1,39 @@
-<!--- <!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Login</h1>
-    <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        <button type="submit">Login</button>
-    </form>
-    <a href="{{ url_for('main.home') }}">Back to Home</a>
-</body>
-</html> --->
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="author" content="Softnio">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="images/favicon.png">
+    <link rel="shortcut icon" href="static/template/images/favicon.ico">
     <title>GETO</title>
     <link rel="stylesheet" href="/static/template/assets/css/style1ca7.css">
      <script src="{{ url_for('static', filename='js/login.js') }}" defer></script>
 
   </head>
   <body class="nk-body " data-menu-collapse="lg">
+<!-- Custom Success Alert -->
+<div id="loginSuccessAlert" class="position-fixed top-0 start-50 translate-middle-x mt-4 z-index-1055" style="display: none; min-width: 300px;">
+  <div class="alert alert-success alert-dismissible fade show shadow rounded-3 d-flex align-items-center" role="alert">
+    <i class="ni ni-check-circle-fill me-2 fs-4 text-success"></i>
+    <div>
+      Login successful! Redirecting...
+    </div>
+  </div>
+</div>
+
     <div class="nk-app-root ">
       <main class="nk-pages">
-        <div class="min-vh-100 d-flex flex-column has-mask">
+        <div class="min-vh-50 d-flex flex-column has-mask">
           <div class="nk-mask bg-pattern-dot bg-blend-around"></div>
           <div class="text-center mt-6 mb-4">
-            <a href="index.html" class="logo-link">
+            <a href="#" class="logo-link">
               <div class="logo-wrap">
                 <img class="logo-img logo-light" src="/static/template/images/logo.png">
                 <img class="logo-img logo-dark" src="/static/template/images/logo_black.png" alt="">
               </div>
             </a>
           </div>
+
           <div class="my-auto">
             <div class="container">
               <div class="row g-gs justify-content-center">
@@ -72,7 +63,7 @@
                               </div>
                             </div>
                           </div>
-                          <div class="col-12">
+                          <!-- <div class="col-12">
                             <div class="d-flex flex-wrap justify-content-between has-gap g-3">
                               <div class="form-group">
                                 <div class="form-check form-check-sm">
@@ -80,16 +71,17 @@
                                   <label class="form-check-label" for="rememberMe"> Remember Me </label>
                                 </div>
                               </div>
-                              <a href="reset-s2.html" class="small">Forgot Password?</a>
+                              <a href="reset-s2.html" class="small" >Forgot Password?</a>
                             </div>
-                          </div>
+                          </div> -->
                           <div class="col-12">
                             <div class="form-group">
                               <button class="btn btn-primary btn-block" type="submit" id="login-button"><a>Login</a></button>
                             </div>
                           </div>
-                          <div class="col-12 text-center">
-                            <div class="small mb-3">or login with</div>
+                           <div class="col-12 text-center">
+                            <div class="small mb-3"></div>
+                             <!--<div class="small mb-3">or login with</div>
                             <ul class="btn-list btn-list-inline gx-2">
                               <li>
                                 <a class="btn btn-light btn-icon" href="#">
@@ -106,11 +98,12 @@
                                   <em class="icon fs-5 ni ni-apple"></em>
                                 </a>
                               </li>
-                            </ul>
+                            </ul> -->
+                        
                             <p class="mt-4">Don't have an account?  <a href="/register">Register</a>
                             </p>
                           </div>
-                        </div>
+                        
                       </form>
                     </div>
                   </div>
@@ -118,8 +111,7 @@
               </div>
             </div>
           </div>
-          <p class="text-center text-heading mt-4 mb-6">&copy; 2025 GETO.
-          </p>
+          <!-- <p class="text-center text-heading mt-4 mb-6">&copy; 2025 GETO. </p>  -->
         </div>
       </main>
     </div>

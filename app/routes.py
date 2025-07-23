@@ -147,7 +147,9 @@ def databases():
 def connection_form():
     return render_template("add_database_form.html")
 
-
+@main.route("/login-success")
+def login_success():
+    return render_template("login-success.html")
 
 ######## ----dblist  page routings------
 

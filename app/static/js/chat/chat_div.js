@@ -132,9 +132,10 @@ document.addEventListener('DOMContentLoaded', function() {
     let user_messageicon = "U"
     const sesionemail = localStorage.getItem('email');
     console.log("sesionemail",sesionemail)
-    const msgBody = document.querySelector('.msg-body ul');
+    const msgBody = document.getElementById('chat-messages');
     msgBody.innerHTML = '';
     let messagesLoaded = false;
+    const scrollContainer = document.getElementById("scroll-container");
 
 
     function loadHistory() {
@@ -146,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
              // Clear existing messages
+            msgBody.innerHTML = "";
             console.log("data2",data)
             data.forEach(message => {
                 messagesLoaded = true;
@@ -157,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>${message.message}</p>
                     `;
                     msgBody.appendChild(listItem);
+                    scrollToBottom();
                    
                 } else if (message.sender === 'Ai') {
                     const listItem = document.createElement('li');
@@ -165,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>${message.message}</p>
                     `;
                     msgBody.appendChild(listItem);
+                    scrollToBottom();
                 } else {
                     // Handle other types of messages (e.g., charts)
                     if (message.message && Object.keys(message.message).length > 0) {
@@ -174,6 +178,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
+                
+            
             });
     
             // // Add a divider for today's messages if needed
@@ -185,10 +191,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // `;
             // msgBody.appendChild(todayDivider); // Uncomment if needed
     
-            scrollToBottom(); // Assuming this function scrolls the chat to the bottom
+            //scrollToBottom(); // Assuming this function scrolls the chat to the bottom
+            setTimeout(() => {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                console.log("Scrolled to:", scrollContainer.scrollTop, "/", scrollContainer.scrollHeight);
+              }, 100);
+            
         });
     }
     loadHistory();
+    console.log("Scroll Height:", msgBody.scrollHeight);
+    console.log("Client Height:", msgBody.clientHeight);
+    console.log("Before Scroll:", msgBody.scrollTop);
     
     if (!sessionId) {
         // Create a new session ID if it doesn't exist
@@ -204,12 +218,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // function scrollToBottom() {
+    //     const msgBodyContainer = document.querySelector('.msg-body li');
+    //     msgBodyContainer.scrollTo({
+    //         top: msgBodyContainer.scrollHeight,
+    //         behavior: 'smooth'
+    //     });
+    // }
     function scrollToBottom() {
-        const msgBodyContainer = document.querySelector('.msg-body li');
-        msgBodyContainer.scrollTo({
-            top: msgBodyContainer.scrollHeight,
-            behavior: 'smooth'
-        });
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        // // const chatContainer = document.getElementById("chat-messages");
+        // // console.log("-scroll",msgBody)
+        // // if (msgBody) {
+        // //     msgBody.scrollTop = msgBody.scrollHeight;
+        // // }
+        // const container = document.getElementById('scroll-container');
+        // if (container) {
+        //     container.scrollTop = container.scrollHeight;
+        //     console.log("Scrolled to:", container.scrollTop, "/", container.scrollHeight);
+        // }
     }
 
 
@@ -270,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>${message}</p>
         `;
         msgBody.appendChild(listItem);
-
+        scrollToBottom();
         // Send the message to the endpoint
        
         fetch('/chat_ai', {
@@ -290,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>${data.data.message}</p>
                 `;
                 msgBody.appendChild(listItem);
-
+                scrollToBottom();
                 // Display the chart
                 if (responseData.chart_type !== undefined && responseData.chart_type !== null){
                 displayChart(responseData.chart_type, responseData.chart_data,  responseData.embed_id);
@@ -335,6 +362,37 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayChart(chartType, chartData, embed_id) {
         const chartWrapper = document.createElement('div');
         chartWrapper.classList.add('chart-wrapper');
+
+        if (chartType === 'table') {
+            const table = document.createElement('div');
+            table.classList.add('table-container');
+            table.style.maxHeight = '600px';
+            table.style.overflowY = 'auto';
+
+            const chartDataObj = chartData; // Assuming chartData is an object
+
+            let tableHtml = '<table border="1">';
+            tableHtml += '<table border="1">';
+            tableHtml += '<thead><tr>';
+       
+            chartDataObj.datasets.forEach((dataset) => {
+                tableHtml += `<th>${dataset.label}</th>`;
+            });
+            tableHtml += '</tr></thead>';
+            tableHtml += '<tbody>';
+            for (let i = 0; i < chartDataObj.datasets[0].values.length; i++) {
+                tableHtml += '<tr>';
+                chartDataObj.datasets.forEach((dataset) => {
+                tableHtml += `<td>${dataset.values[i]}</td>`;
+                });
+                tableHtml += '</tr>';
+            }
+            tableHtml += '</tbody>';
+            tableHtml += '</table>';
+
+            table.innerHTML = tableHtml;
+            chartWrapper.appendChild(table);
+        } else {
 
         const chartContainer = document.createElement('div');
         chartContainer.classList.add('chart-container');
@@ -458,8 +516,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chartWrapper.appendChild(chartContainer);
         chartWrapper.appendChild(iconContainer);
-
-        chatMessages.appendChild(chartWrapper);
+        
+        msgBody.appendChild(chartWrapper);
         scrollToBottom();
 
         const ctx = canvas.getContext('2d');
@@ -498,6 +556,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
         
         new Chart(ctx, config);
+    }
+    msgBody.appendChild(chartWrapper);
+    scrollToBottom();
       
     }
 
