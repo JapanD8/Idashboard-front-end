@@ -15,7 +15,7 @@ def create_app():
     load_dotenv()
     
     mysql_user = os.getenv("MYSQL_USER", "root")
-    mysql_pw = os.getenv("MYSQL_PASSWORD", "")
+    mysql_pw = os.getenv("MYSQL_PASSWORD", "saravananyugan")
     db_name = os.getenv("MYSQL_DB", "authdb")
     host = os.getenv("HOST", "host.docker.internal")
 
