@@ -5,7 +5,7 @@ from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from .services import re_get_connection , get_processed_data, generate_unique_embed_id, validate_access_token, create_access_token, schema_for_api_calls
+from .services import re_get_connection , get_processed_data, generate_unique_embed_id, validate_access_token, create_access_token, schema_for_api_calls, get_reply_qwen
 import mysql.connector
 import psycopg2
 from collections import defaultdict
@@ -734,6 +734,76 @@ def get_info(token=None, user_id=None, db_id=None, schema={}):
         return jsonify({'reply': f"{message}", "data" :data })
     else:
         return jsonify({'reply': f"{message}", "data" :data })
+
+
+
+@main.route("/chat_ai2", methods=['POST'])
+@login_required
+def chat_ai2():
+    if current_user.is_authenticated:
+        session_id = request.json['session_id']
+        usermessage = request.json['message']
+        schema_data = request.json['schema_data']
+        dbId = request.json['dbId']
+        print( "active_connections",session_id,usermessage)
+        print("active_connections",len(active_connections))
+        aimessage =""
+        try:
+            connection = Message(
+                session_id = session_id,
+                message = usermessage,
+                sender = 'user',
+                db_id = dbId
+                )
+            db.session.add(connection)
+            db.session.commit()
+        except Exception as e:
+            print(e)
+        result, ai_data = get_reply_qwen(schema_data,usermessage, current_user.id, dbId)
+        print("result,ai_data",result,ai_data)
+
+       
+        data = {"message":"I am here to help you with SQL queries and data visualization"}
+        if type(result)==str:
+            aimessage =result
+            data["message"] =result
+        print("ai_data",ai_data)
+        if ai_data:
+            data = ai_data
+            aimessage = ai_data.get("message")
+
+        #inset Ai Message
+        try:
+            connection = Message(
+                session_id = session_id,
+                message = aimessage,
+                sender = 'Ai',
+                db_id = dbId
+                )
+            db.session.add(connection)
+            db.session.commit()
+        except Exception as e:
+            print(e)
+
+        # insert charrt data
+        try:
+            embed_id = generate_unique_embed_id()
+            connection = ChartData(
+                user_id = current_user.id,
+                db_id = dbId,
+                content = data,
+                embed_id=embed_id
+                )
+            db.session.add(connection)
+            db.session.commit()
+            data["embed_id"]=embed_id
+        except Exception as e:
+            print(e)
+
+        return jsonify({'success': True, 'data': data})
+    else:
+        return redirect(url_for('/login'))
+
 
 @main.route("/logout")
 @login_required

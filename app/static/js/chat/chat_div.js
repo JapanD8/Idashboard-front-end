@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollToBottom();
         // Send the message to the endpoint
        
-        fetch('/chat_ai', {
+        fetch('/chat_ai2', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_id: sessionId, message: message, schema_data: schemadata , dbId:dbId})

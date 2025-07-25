@@ -12,6 +12,9 @@ from collections import defaultdict
 import uuid
 from . import db
 
+from .ai_models import QwenChatClient
+from .chart_processing import ChartDataProcessor
+
 def create_access_token(user_id, db_id):
     payload = {
         'user_id': user_id,
@@ -147,7 +150,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             - If the user specifies a chart type, use that type; otherwise, choose an appropriate type based on the query.
             - Note: For a query resulting in a single numerical or string value, use "metric" as the chart type; for queries with more than two values, use "bar" or "pie".
             - Ensure all keys in the JSON output are filled; do not leave any empty.
-            - If the user asks a question related to [updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
+            - If the user asks a question related to [inserting or updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
 
 
             Example Input:
@@ -208,7 +211,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             - If the user specifies a chart type, use that type; otherwise, choose an appropriate type based on the query.
             - Note: For a query resulting in a single numerical or string value, use "metric" as the chart type; for queries with more than two values, use "bar" or "pie".
             - Ensure all keys in the JSON output are filled; do not leave any empty.
-            - If the user asks a question related to [updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
+            - If the user asks a question related to [inserting or updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
 
 
             Example Input:
@@ -866,3 +869,106 @@ def schema_for_api_calls(user_id, db_id):
         schema_data["tables"] = schema_json["tables"]
 
     return schema_data
+
+
+def process_metric(user_question, result):
+        
+    # Generate a summary using the provided prompt
+    prompt = f"""
+    You are summarizer an AI tool specializing in ultra-concise, context-aware summaries. Your task is to generate a summary of the provided Answer that directly addresses the User Question, while ignoring irrelevant details.
+    User Question: {user_question}
+    Answer: {result}
+    DO:
+    - Extract only the core information from the Answer that answers the User Question.
+    - Summarize in 1 sentence (max 15 words).
+    - Use neutral, factual language.
+    - Preserve critical numbers/dates if present.
+
+    DON'T:
+    - Add opinions, examples, or new information.
+    - Repeat the question.
+    - Use bullet points or markdown.
+    Example:
+        User Question:
+        What was the total claim amount submitted by user A in Q3 2024?
+        Answer:
+        sum(claim)
+        0 $4,200
+        Output:
+        User A's total Q3 2024 claims were $4,200.
+    """
+        
+    # Assuming you have a function to generate the summary using the prompt
+    # For demonstration purposes, we'll use a simple summary generation
+    qwen = QwenChatClient()
+
+    user_input = "Tell me a fun fact about pandas."
+    summary = qwen.summary(prompt)
+    
+    return  summary
+
+
+
+
+def get_reply_qwen(schmea, user_question,user_id,connection_id):
+    active_connections = {}
+    data ={}
+    print(len(active_connections))
+    if  len(active_connections)==0:
+        active_connections, db_name, db_system = re_get_connection(connection_id, user_id)
+
+    load_dotenv()
+    gemini_key = os.getenv("GEMINI_Key")
+    client = genai.Client(api_key=gemini_key)
+    if (user_id, connection_id) not in active_connections:
+        print("active_connections empty")
+        print("error" , db_system)
+        return 404, {}
+
+    print("user_id, connection_id",user_id, connection_id)
+   
+    conn = active_connections[(user_id, connection_id)]
+    cursor = conn.cursor()
+
+    qwen = QwenChatClient()
+
+    user_input = "Tell me a fun fact about pandas."
+    reply = qwen.ask(user_question,db_system, schmea)
+    print("reply from QWEn",reply)
+
+
+    
+    #pjson_data = json.load(json_data)
+    if "json" in reply:
+        json_data = json.loads(response_text.split("json")[1].split("```")[0])
+    else:
+        json_data = json.loads(reply)
+    print(type(json_data))
+    #result  = eval(json_data.get("query"))
+    #result = st.session_state.con.execute(json_data.get("query")).fetchdf()
+    
+    if json_data.get("query")==None:
+        return json_data.get("title"), {}
+    if json_data.get("x_axis")==None and json_data.get("y_axis")==None and json_data.get("query")==None:
+        return json_data.get("title"), {}
+    
+    if json_data.get("query"):
+        print("delete" in  json_data.get("query").lower() or "update" in  json_data.get("query").lower())
+        if "delete" in  json_data.get("query").lower() or "update" in  json_data.get("query").lower() or "insert" in  json_data.get("query").lower():
+            return "No update , delete or insert allowed try asking different question", {}
+        
+    result = pd.read_sql_query(json_data.get("query"), conn)
+
+    print(result)
+    if json_data.get("chart_type")=="metric":
+        json_data["user_question"]=user_question
+        summary = process_metric(user_question, result)
+        data["message"] = summary
+    else:
+        processor = ChartDataProcessor(json_data, result)
+        success, data = processor.process()
+        print(data)
+    
+
+    
+    return True ,data
