@@ -11,15 +11,22 @@
 
   </head>
   <body class="nk-body " data-menu-collapse="lg">
-<!-- Custom Success Alert -->
-<div id="loginSuccessAlert" class="position-fixed top-0 start-50 translate-middle-x mt-4 z-index-1055" style="display: none; min-width: 300px;">
+<!-- Success Alert -->
+<div id="loginSuccessAlert" class="position-fixed top-0 start-50 translate-middle-x mt-6 z-index-1055" style="display: none; min-width: 480px;z-index:999;">
   <div class="alert alert-success alert-dismissible fade show shadow rounded-3 d-flex align-items-center" role="alert">
     <i class="ni ni-check-circle-fill me-2 fs-4 text-success"></i>
-    <div>
-      Login successful! Redirecting...
-    </div>
+    <div>Login successful! Redirecting...</div>
   </div>
 </div>
+
+<!-- Error Alert -->
+<div id="loginErrorAlert" class="position-fixed top-0 start-50 translate-middle-x mt-6 z-index-1055" style="display: none; min-width: 480px;z-index:999;">
+  <div class="alert alert-danger alert-dismissible fade show shadow rounded-3 d-flex align-items-center" role="alert">
+    <i class="ni ni-alert-fill me-2 fs-4 text-danger"></i>
+    <div id="loginErrorMessage">Invalid username or password!</div>
+  </div>
+</div>
+
 
     <div class="nk-app-root ">
       <main class="nk-pages">
@@ -34,7 +41,7 @@
             </a>
           </div>
 
-          <div class="my-auto">
+          <div class="my-auto mt-5">
             <div class="container">
               <div class="row g-gs justify-content-center">
                 <div class="col-md-7 col-lg-6 col-xl-5">
@@ -55,7 +62,7 @@
                             <div class="form-group">
                               <label class="form-label" for="toggle-password">Password</label>
                               <div class="form-control-wrap">
-                                <a href="toggle-password.html" class="form-control-icon end password-toggle" title="Toggle show/hide password">
+                                <a href="#" class="form-control-icon end password-toggle" title="Toggle show/hide password">
                                   <em class="on icon ni ni-eye text-base"></em>
                                   <em class="off icon ni ni-eye-off text-base"></em>
                                 </a>
@@ -100,7 +107,7 @@
                               </li>
                             </ul> -->
                         
-                            <p class="mt-4">Don't have an account?  <a href="/register">Register</a>
+                            <p class="mt-4">Don't have an account?  <a href="/register" class="log-reg">Register</a>
                             </p>
                           </div>
                         

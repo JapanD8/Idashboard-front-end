@@ -151,7 +151,19 @@ def connection_form():
 def login_success():
     return render_template("login-success.html")
 
+@main.route("/ai-setting")
+def ai_setting():
+    return render_template("ai-setting.html")
+
+@main.route("/reports")
+def reports():
+    return render_template("reports.html")
+
+@main.route("/documentation")
+def documentations():
+    return render_template("documentation.html")
 ######## ----dblist  page routings------
+
 
 
 
