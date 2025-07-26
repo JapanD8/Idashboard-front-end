@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     continueButton.addEventListener('click', (e) => {
         e.preventDefault();
         console.log("Button clicked")
+
+        
         const nameInput = document.getElementById('name');
         const name = nameInput.value.trim();
         const hostInput = document.getElementById('host');

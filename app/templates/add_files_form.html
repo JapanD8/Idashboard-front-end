@@ -16,29 +16,30 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="/static/template/assets/css/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/upload_files.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="static/template/images/favicon.ico" />
 </head>
 
 <body>
   <div class="container-scroller">
-    <!-- partial:../../partials/_horizontal-navbar.html -->
+    <!-- partial:../partials/_horizontal-navbar.html -->
         
          <div class="horizontal-menu">
       <nav class="navbar top-navbar col-lg-12 col-12 p-0">
         <div class="container-fluid">
           <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between">
             <ul class="navbar-nav navbar-nav-left">
-            <!-- <li class="nav-item nav-search d-none d-lg-block ms-3">
-                <div class="input-group">
+             <li class="nav-item nav-search d-none d-lg-block ms-3">
+              <!--  <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text" id="search">
                         <i class="mdi mdi-magnify"></i>
                       </span>
                     </div>
                     <input type="text" class="form-control" placeholder="search" aria-label="search" aria-describedby="search">
-                </div>
-              </li>	-->
+                </div>-->
+              </li>	
             </ul>
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
                 <a class="navbar-brand brand-logo" href="#"><img src="/static/template/assets/images/logo_black.png" alt="logo"/></a>
@@ -47,7 +48,7 @@
             <ul class="navbar-nav navbar-nav-right">
                 
                
-                <!-- <li class="nav-item dropdown d-lg-flex d-none">
+               <!-- <li class="nav-item dropdown d-lg-flex d-none">
                   <button type="button" class="btn  btn-sm"><i class="mdi mdi-message-reply-text"></i>Help</button>
                 </li> -->
                 <li class="nav-item nav-profile dropdown">
@@ -61,7 +62,7 @@
                         <i class="mdi mdi-settings text-primary"></i>
                         Settings
                       </a>
-                      <a class="dropdown-item" id="logout-link">
+                      <a class="dropdown-item">
                         <i class="mdi mdi-logout text-primary"></i>
                         Logout
                       </a>
@@ -84,17 +85,17 @@
                 </a>
               </li>
               <li class="nav-item">
-                  <a href="#" class="nav-link">
+                  <a href="#" class="nav-link" >
                     <i class="mdi mdi-cube-outline menu-icon"></i>
                     <span class="menu-title">AI Settings</span>
                     <i class="menu-arrow"></i>
                   </a>
-                    <!-- <div class="submenu">
+                 <!-- <div class="submenu">
                       <ul>
                           <li class="nav-item"><a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
                           <li class="nav-item"><a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
                       </ul>
-                  </div>--> 
+                  </div>-->
               </li>
               <li class="nav-item">
                   <a href="#" class="nav-link">
@@ -155,84 +156,59 @@
       <div class="main-panel container">
         <div class="content-wrapper">
           <div class="row">
-			   <div class="col-md-2"></div>
-            <div class="col-md-8 grid-margin stretch-card">
+			   <div class="col-md-3"></div>
+            <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
-                <div class="card-body p-5">
-                  <h4 class="card-title text-center add-dbtitle mt-3">Add your database</h4>
-                  <p class="card-description text-center">
-                   Select your database type
-                  </p>
-                  <form class="forms-sample">
-					  <div class="row mt-4">
-					  <div class="col-md-3">  <div class="card d-flex align-items-center justify-content-between mt-3 h80">
-  <img src="/static/template/assets/images/icon/mysql-original.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-     <h5>MySQL</h5>
-								  </div>
-						  </div>
-						  <div class="col-md-3">
-							  <div class="card d-flex align-items-center justify-content-between mt-3 h80" >
-  <img src="/static/template/assets/images/icon/postgresql-original.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-    <h5>PostgreSQL</h5>
-								  </div></div>
-						   <div class="col-md-3">
-							  <div class="card d-flex align-items-center justify-content-between mt-3 h80" >
-  <img src="/static/template/assets/images/icon/microsoftsqlserver-plain.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-    <h5>Microsoft SQL Server</h5>
-								  </div></div>
-						   <div class="col-md-3">
-							  <div class="card d-flex align-items-center justify-content-between mt-3 h80" >
-  <img src="/static/template/assets/images/icon/oracle-original.svg" alt="Avatar" style="width: 36%;">
- 
-     <h5>Oracle PL/SQL</h5>
-								  </div></div>
-					  </div>
-                    <div class="row mt-3">
-					  <div class="col-md-3">  <div class="card d-flex align-items-center justify-content-between mt-3 h80" >
-  <img src="/static/template/assets/images/icon/mysql-original.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-     <h5>SQLite</h5>
-								  </div>
-						  </div>
-						  <div class="col-md-3">
-							  <div class="card d-flex align-items-center justify-content-between mt-3 h80"  >
-  <img src="/static/template/assets/images/icon/mariadb-original.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-    <h5>MariaDB</h5>
-								  </div></div>
-						   <div class="col-md-3">
-							  <div class="card d-flex align-items-center justify-content-between mt-3 h80" >
-  <img src="/static/template/assets/images/icon/mongodb-original.svg" alt="Avatar" style="width: 36%;padding: 13px;">
- 
-    <h5>MangoDB</h5>
-								  </div></div>
-
-                  <div class="col-md-3">
-                    <div class="card d-flex align-items-center justify-content-between mt-3 h80 other-card" >
-      <img src="/static/template/assets/images/icon/files.svg" alt="Avatar" style="width: 36%;padding: 13px;">
-     
-        <h5>Files</h5>
-                      </div></div>
-						   
-					  </div>
+				 <div class="row">
+			   <div class="col-md-1"></div>
+					  <div class="col-md-10">
+					   <div class="card-body">
+                  <h4 class="card-title mt-4 text-center add-dbtitle">Add your Files</h4>
+                  <p class="card-description">
                    
-                   <div class="mt-5 text-center mb-3">
-				
-                    <button type="button" class="btn btn-primary me-2"  id="db-continue-button" >Continue</button>
-                    <button class="btn btn-light" id="exit-btn">Cancel</button></div>
-                  </form>
+                  </p>
+                  <div class="modal-content-upload" id="fileUploadModal">
+                    <span class="close" onclick="closeFileUploadModal()">×</span>
+                    
+                    <form id="fileUploadForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="folderName">Folder Name:</label>
+                            <input type="text" id="folderName" name="folderName" required="" placeholder="Enter folder name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Files (Max 200MB total):</label>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <p>🔄 Drag &amp; drop files here or <strong>click to browse</strong></p>
+                                <input type="file" id="fileInput" multiple="" style="display: none;">
+                            </div>
+                            <div id="fileList" class="file-list"></div>
+                            <div class="progress-container" id="progressContainer" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="progress-text" id="progressText">0%</div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button type="submit" class="btn btn-primary" id="uploadBtn" style="background-color: rgb(51, 51, 51);">Upload Files</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeFileUploadModal()">Cancel</button>
+                        </div>
+                    </form>
                 </div>
+                            </div></div>
+					  <div class="col-md-1"></div>
+              
               </div>
             </div>
            
-          <div class="col-md-2"></div>
           </div>
+          
+           <div class="col-md-3"></div>
         </div>
         <!-- content-wrapper ends -->
-        <!-- partial:../../partials/_footer.html -->
+        <!-- partial:../partials/_footer.html -->
        <!-- <footer class="footer">
           <div class="footer-wrap">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -256,38 +232,14 @@
   <!-- inject:js -->
   <script src="/static/template/assets/js/template.js"></script>
   <!-- endinject -->
-  <!-- plugin js for this page -->
-  <script src="/static/template/vendors/typeahead.js/typeahead.bundle.min.js"></script>
+  
   <script src="/static/template/vendors/select2/select2.min.js"></script>
   <!-- End plugin js for this page -->
   <!-- Custom js for this page-->
   <script src="/static/template/assets/js/file-upload.js"></script>
-  <script src="/static/template/assets/js/typeahead.js"></script>
-
-  <script src="{{ url_for('static', filename='js/db_selector.js') }}"></script>
+ <!-- <script src="/static/template/assets/js/typeahead.js"></script>-->
+  <script src="{{ url_for('static', filename='js/add_files.js') }}"></script>
   <!-- End custom js for this page-->
-
- <!--<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const cards = document.querySelectorAll(".col-md-3 .card");
-
-  cards.forEach(card => {
-    card.addEventListener("click", function () {
-      // Remove selected class from all
-      cards.forEach(c => c.classList.remove("selected"));
-      
-      // Add selected class to clicked one
-      this.classList.add("selected");
-    });
-  });
-});
-</script>-->
-<style>
-.card.selected {
-  border: 2px solid #007bff; /* blue border */
-  background-color: #e8f0ff; /* light background */
-} </style>
-
 </body>
 
 </html>

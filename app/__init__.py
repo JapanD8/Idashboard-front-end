@@ -35,6 +35,11 @@ def create_app():
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True,'pool_recycle': 280}
     app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 
+
+    from config import Config 
+    app.config.from_object(Config)
+    Config.init_app(app)
+
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
@@ -52,6 +57,8 @@ def create_app():
         existing_tables = inspector.get_table_names()
         if not {'user', 'db_connections'}.issubset(existing_tables):
             db.create_all()
+
+    
 
     # ✅ Register routes
     from .routes import main

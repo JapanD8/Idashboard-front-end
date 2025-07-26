@@ -42,10 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
         alert('Please select a database');
     } else {
         // Continue with your logic here
+         if (selectedDbTile.textContent.trim() === 'Files') {
+          window.location.href = '/upload'; // redirect to a different page
+          } 
+          else {
         console.log('Selected database:', selectedDbTile.textContent.trim());
         const url = `/connection_form?database=${encodeURIComponent(selectedDbTile.textContent.trim())}`;
         window.location.href = url;
-    }
+            }
+      }
     });
 
 
