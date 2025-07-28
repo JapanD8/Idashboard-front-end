@@ -105,7 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
           
           
       // Inside modal update button
-      document.getElementById('db-update-button').addEventListener('click', function() {
+      document.getElementById('db-update-button').addEventListener('click', function(event) {
+        event.preventDefault();
         const connectionId = document.getElementById('edit-modal').getAttribute('data-connection-id');
         const data = {
           name: document.getElementById('name').value,
@@ -126,9 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            alert('Connection updated successfully!');
+            
             const modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
             modal.hide();
+            alert('Connection updated successfully!');
             window.location.href = "/databases";
             // Close the modal or redirect to another page
           } else {

@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(response => {
                 if (response.status === 200) {
+                    alert("Database added successfully")
                     window.location.href = '/dashboard'; // Redirect to another page
                 } else {
                     console.error('Error:', response.status);
