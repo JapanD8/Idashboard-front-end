@@ -1,7 +1,7 @@
 # app/routes.py
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify, session, render_template_string, current_app
-from .models import User, Connection, ChatSession, Message,ChartData, AccesstokenData
-from . import db
+from app.models import User, Connection, ChatSession, Message,ChartData, AccesstokenData, UserFolder
+from app.models import db 
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
@@ -23,7 +23,7 @@ import jwt
 import os 
 active_connections = {}
 
-main = Blueprint("main", __name__)
+main = Blueprint('main', __name__)
 
 def authenticate(f):
     @wraps(f)
@@ -123,8 +123,21 @@ def dashboard():
     if current_user.is_authenticated:
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
+
+        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+
+        for conn in connections:
+            conn.type = 'connection'
+            
+        for folder in folder_list:
+            folder.type = 'folder'
+            folder.file_types = json.loads(folder.file_types_json)
+
+        # Merge and sort by created_at
+        combined = list(chain(connections, folder_list))
+        combined_sorted = sorted(combined, key=lambda x: x.created_at)
         
-        return render_template('dashboard-new.html', connections=connections, email=current_user.email)
+        return render_template('dashboard-new.html', connections=combined_sorted, email=current_user.email)
     else:
         return redirect(url_for('/login'))
 
@@ -135,8 +148,20 @@ def databases():
     if current_user.is_authenticated:
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
+        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+
+        for conn in connections:
+            conn.type = 'connection'
+            
+        for folder in folder_list:
+            folder.type = 'folder'
+            folder.file_types = json.loads(folder.file_types_json)
+
+        # Merge and sort by created_at
+        combined = list(chain(connections, folder_list))
+        combined_sorted = sorted(combined, key=lambda x: x.created_at)
         
-        return render_template('dashboard-new.html', connections=connections, email=current_user.email)
+        return render_template('dashboard-new.html', connections=combined_sorted, email=current_user.email)
     else:
         return redirect(url_for('/login'))
 
@@ -207,12 +232,20 @@ def get_connections():
 @main.route('/connections/<int:connection_id>', methods=['DELETE'])
 @login_required
 def delete_connection(connection_id):
-    connection = Connection.query.filter_by(id=connection_id, user_id=current_user.id).first()
-    if connection:
-        db.session.delete(connection)
-        db.session.commit()
+    connection_id = request.json['connectionid']
+    connection_type = request.json['type']
+    print("connection_id, connection_type",connection_id, connection_type)
+    try:
+        if connection_type == "folder":
+            UserFolder.query.filter_by(user_id=current_user.id, id=connection_id).update({UserFolder.status: "inactive"})
+            db.session.commit()
+        if connection_type == "connection":
+            connection = Connection.query.filter_by(id=connection_id, user_id=current_user.id).first()
+            if connection:
+                db.session.delete(connection)
+                db.session.commit()
         return jsonify({'success': True})
-    else:
+    except Exception as e:
         return jsonify({'success': False, 'error': 'Connection not found'}), 404
     
 
@@ -317,6 +350,7 @@ def update_connection(connection_id):
 def disconnect_connection(connection_id):
     try:
         # Retrieve the established connection object from the session
+        
         conn = session.get(f'connection_{connection_id}')
 
         if conn:
@@ -332,6 +366,7 @@ def disconnect_connection(connection_id):
 
         return jsonify({'success': True})
     except Exception as e:
+        
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -745,201 +780,7 @@ def upload_page():
         return redirect(url_for('/login'))
 
 
-@main.route('/uploadfiles', methods=['POST'])
-@login_required
-def upload_files():
-    try:
-        # Basic server-side checks (still recommended for security)
-        if 'folderName' not in request.form:
-            return jsonify({'error': 'Folder name is required'}), 400
-        
-        folder_name = secure_filename(request.form['folderName'])  # ✅ Now this will work
-        if not folder_name:
-            return jsonify({'error': 'Invalid folder name'}), 400
-        
-        if 'files' not in request.files:
-            return jsonify({'error': 'No files provided'}), 400
-        
-        files = request.files.getlist('files')
-        if not files or all(file.filename == '' for file in files):
-            return jsonify({'error': 'No files selected'}), 400
-        
-        # Create folder path
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        folder_path = os.path.join(upload_folder, folder_name)
-        
-        # Handle duplicate folder names
-        # counter = 1
-        # original_folder_path = folder_path
-        # while os.path.exists(folder_path):
-        #     folder_path = f"{original_folder_path}_{counter}"
-        #     counter += 1
-        
-        os.makedirs(folder_path, exist_ok=True)
-        
-        uploaded_files = []
-        
-        for file in files:
-            if file and file.filename != '':
-                filename = secure_filename(file.filename)  # ✅ And this will work too
-                if filename:
-                    # Handle duplicate filenames
-                    file_path = os.path.join(folder_path, filename)
-                    counter = 1
-                    original_filename = filename
-                    name, ext = os.path.splitext(original_filename)
-                    
-                    # while os.path.exists(file_path):
-                    #     filename = f"{name}_{counter}{ext}"
-                    #     file_path = os.path.join(folder_path, filename)
-                    #     counter += 1
-                    
-                    file.save(file_path)
-                    uploaded_files.append({
-                        'original_name': file.filename,
-                        'saved_name': filename,
-                        'size': os.path.getsize(file_path)
-                    })
-        
-        return jsonify({
-            'message': 'Files uploaded successfully',
-            'folder_name': os.path.basename(folder_path),
-            'uploaded_files': uploaded_files,
-            'total_files': len(uploaded_files),
-            'total_size': sum(file['size'] for file in uploaded_files)
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
-
-
-@main.route('/folder/<folder_name>')
-@login_required
-def get_folder_contents(folder_name):
-    """Get contents of a specific folder"""
-    try:
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        folder_name = secure_filename(folder_name)
-        folder_path = os.path.join(upload_folder, folder_name)
-        
-        if not os.path.exists(folder_path):
-            return jsonify({'error': 'Folder not found'}), 404
-        
-        files = []
-        for filename in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, filename)
-            if os.path.isfile(file_path):
-                files.append({
-                    'name': filename,
-                    'size': os.path.getsize(file_path),
-                    'modified': os.path.getmtime(file_path)
-                })
-        
-        return jsonify({
-            'folder_name': folder_name,
-            'files': files,
-            'total_files': len(files),
-            'total_size': sum(file['size'] for file in files)
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': f'Failed to get folder contents: {str(e)}'}), 500
-
-@main.route('/delete_file', methods=['DELETE'])
-@login_required
-def delete_file():
-    """Delete a specific file from a folder"""
-    try:
-        data = request.get_json()
-        folder_name = secure_filename(data.get('folderName', ''))
-        file_name = secure_filename(data.get('fileName', ''))
-        
-        if not folder_name or not file_name:
-            return jsonify({'error': 'Folder name and file name are required'}), 400
-        
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        file_path = os.path.join(upload_folder, folder_name, file_name)
-        
-        if not os.path.exists(file_path):
-            return jsonify({'error': 'File not found'}), 404
-        
-        os.remove(file_path)
-        return jsonify({'message': f'File "{file_name}" deleted successfully'}), 200
-        
-    except Exception as e:
-        return jsonify({'error': f'Failed to delete file: {str(e)}'}), 500
-
-@main.route('/update_folder', methods=['POST'])
-@login_required
-def update_folder():
-    """Update folder name and add new files"""
-    try:
-        original_folder_name = secure_filename(request.form.get('originalFolderName', ''))
-        new_folder_name = secure_filename(request.form.get('newFolderName', ''))
-        
-        if not original_folder_name or not new_folder_name:
-            return jsonify({'error': 'Both original and new folder names are required'}), 400
-        
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        original_path = os.path.join(upload_folder, original_folder_name)
-        
-        if not os.path.exists(original_path):
-            return jsonify({'error': 'Original folder not found'}), 404
-        
-        # Handle folder rename if name changed
-        if original_folder_name != new_folder_name:
-            new_path = os.path.join(upload_folder, new_folder_name)
-            
-            # Handle duplicate folder names
-            counter = 1
-            while os.path.exists(new_path):
-                new_path = os.path.join(upload_folder, f"{new_folder_name}_{counter}")
-                counter += 1
-            
-            os.rename(original_path, new_path)
-            folder_path = new_path
-            final_folder_name = os.path.basename(new_path)
-        else:
-            folder_path = original_path
-            final_folder_name = original_folder_name
-        
-        # Add new files if any
-        uploaded_files = []
-        if 'newFiles' in request.files:
-            files = request.files.getlist('newFiles')
-            
-            for file in files:
-                if file and file.filename != '':
-                    filename = secure_filename(file.filename)
-                    if filename:
-                        # Handle duplicate filenames
-                        file_path = os.path.join(folder_path, filename)
-                        counter = 1
-                        original_filename = filename
-                        name, ext = os.path.splitext(original_filename)
-                        
-                        # while os.path.exists(file_path):
-                        #     filename = f"{name}_{counter}{ext}"
-                        #     file_path = os.path.join(folder_path, filename)
-                        #     counter += 1
-                        
-                        file.save(file_path)
-                        uploaded_files.append({
-                            'original_name': file.filename,
-                            'saved_name': filename,
-                            'size': os.path.getsize(file_path)
-                        })
-        
-        return jsonify({
-            'message': 'Folder updated successfully',
-            'folder_name': final_folder_name,
-            'uploaded_files': uploaded_files,
-            'total_new_files': len(uploaded_files)
-        }), 200
-        
-    except Exception as e:
-        return jsonify({'error': f'Failed to update folder: {str(e)}'}), 500
 
 
 

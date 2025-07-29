@@ -1,5 +1,5 @@
 from google import genai
-from .models import User, Connection, ChatSession, Message, AccesstokenData
+from app.models import User, Connection, ChatSession, Message, AccesstokenData
 import mysql.connector
 import pandas as pd
 import json
@@ -10,7 +10,7 @@ import jwt
 import datetime
 from collections import defaultdict
 import uuid
-from . import db
+from app.models import db 
 
 def create_access_token(user_id, db_id):
     payload = {
@@ -352,35 +352,35 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             col1_str = pd.api.types.is_string_dtype(result.iloc[:, 0])
             col2_str = pd.api.types.is_string_dtype(result.iloc[:, 1])
             col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
-            if (col1_str and col2_str and col3_num):
+            
                
-                # 2. Pivot the data
-                pivot_df = result.pivot_table(
-                    index=result.columns[0], 
-                    columns=result.columns[1], 
-                    values=result.columns[2],
-                    aggfunc='sum',
-                    fill_value=0
-                )
+            # 2. Pivot the data
+            pivot_df = result.pivot_table(
+                index=result.columns[0], 
+                columns=result.columns[1], 
+                values=result.columns[2],
+                aggfunc='sum',
+                fill_value=0
+            )
 
-                # 3. Create the dictionary
-                unique_states = pivot_df.index.tolist()
-                unique_products = pivot_df.columns.tolist()
+            # 3. Create the dictionary
+            unique_states = pivot_df.index.tolist()
+            unique_products = pivot_df.columns.tolist()
 
-                sales_dict = {}
-                for product in unique_products:
-                    sales_dict[product] = pivot_df[product].tolist()
-            else:
-                print("bar with line entered")
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "barWithLine"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] = result[columns[0]].tolist()
-                data["chart_data"]["values"] = result[columns[1]].tolist()
-                data["chart_data"]["lineValues"] = result[columns[2]].tolist()
-                data["chart_data"]["bar_name"] = columns[1]
-                data["chart_data"]["line_name"] = columns[2]
+            sales_dict = {}
+            for product in unique_products:
+                sales_dict[product] = pivot_df[product].tolist()
+            # else:
+            #     print("bar with line entered")
+            #     data["message"] = json_data.get("title")
+            #     data["chart_type"] = "barWithLine"
+            #     data["chart_data"]={}
+            #     data["chart_data"]["title"] = json_data.get("title")
+            #     data["chart_data"]["labels"] = result[columns[0]].tolist()
+            #     data["chart_data"]["values"] = result[columns[1]].tolist()
+            #     data["chart_data"]["lineValues"] = result[columns[2]].tolist()
+            #     data["chart_data"]["bar_name"] = columns[1]
+            #     data["chart_data"]["line_name"] = columns[2]
 
         if len(column_names)>3:
            
@@ -427,42 +427,42 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             col2_str = pd.api.types.is_string_dtype(result.iloc[:, 1])
             col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
             print("(col1_str and col2_str and col3_num)",(col1_str and col2_str and col3_num))
-            if (col1_str and col2_str and col3_num):
+            #if (col1_str and col2_str and col3_num):
                
-                # 2. Pivot the data
-                pivot_df = result.pivot_table(
-                    index=result.columns[0], 
-                    columns=result.columns[1], 
-                    values=result.columns[2],
-                    aggfunc='sum',
-                    fill_value=0
-                ).reset_index()
+            # 2. Pivot the data
+            pivot_df = result.pivot_table(
+                index=result.columns[0], 
+                columns=result.columns[1], 
+                values=result.columns[2],
+                aggfunc='sum',
+                fill_value=0
+            ).reset_index()
 
-                # 3. Create the dictionary
-                unique_states = pivot_df.index.tolist()
-                unique_products = pivot_df.columns.tolist()
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "stackBar"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
+            # 3. Create the dictionary
+            unique_states = pivot_df.index.tolist()
+            unique_products = pivot_df.columns.tolist()
+            data["message"] = json_data.get("title")
+            data["chart_type"] = "stackBar"
+            data["chart_data"]={}
+            data["chart_data"]["title"] = json_data.get("title")
+            data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
+            data["chart_data"]["datasets"] = []
 
-                sales_dict = {}
-                for product in pivot_df.columns[1:]:
-                    data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
-            col1_str = pd.api.types.is_string_dtype(result.iloc[:, 0])
-            col2_str = pd.api.types.is_numeric_dtype(result.iloc[:, 1])
-            col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
-            if (col1_str and col2_str and col3_num):
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "stackBar"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] = result[columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
-                for i in range(1,len(columns)):
-                    data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
+            sales_dict = {}
+            for product in pivot_df.columns[1:]:
+                data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
+            # col1_str = pd.api.types.is_string_dtype(result.iloc[:, 0])
+            # col2_str = pd.api.types.is_numeric_dtype(result.iloc[:, 1])
+            # col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
+            # if (col1_str and col2_str and col3_num):
+            #     data["message"] = json_data.get("title")
+            #     data["chart_type"] = "stackBar"
+            #     data["chart_data"]={}
+            #     data["chart_data"]["title"] = json_data.get("title")
+            #     data["chart_data"]["labels"] = result[columns[0]].tolist()
+            #     data["chart_data"]["datasets"] = []
+            #     for i in range(1,len(columns)):
+            #         data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
             
 
         if len(column_names)>3:
@@ -642,42 +642,42 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             col2_str = pd.api.types.is_string_dtype(result.iloc[:, 1])
             col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
             print("(col1_str and col2_str and col3_num)",(col1_str and col2_str and col3_num))
-            if (col1_str and col2_str and col3_num):
+            #if (col1_str and col2_str and col3_num):
                
-                # 2. Pivot the data
-                pivot_df = result.pivot_table(
-                    index=result.columns[0], 
-                    columns=result.columns[1], 
-                    values=result.columns[2],
-                    aggfunc='sum',
-                    fill_value=0
-                ).reset_index()
+            # 2. Pivot the data
+            pivot_df = result.pivot_table(
+                index=result.columns[0], 
+                columns=result.columns[1], 
+                values=result.columns[2],
+                aggfunc='sum',
+                fill_value=0
+            ).reset_index()
 
-                # 3. Create the dictionary
-                unique_states = pivot_df.index.tolist()
-                unique_products = pivot_df.columns.tolist()
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "radar"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
+            # 3. Create the dictionary
+            unique_states = pivot_df.index.tolist()
+            unique_products = pivot_df.columns.tolist()
+            data["message"] = json_data.get("title")
+            data["chart_type"] = "radar"
+            data["chart_data"]={}
+            data["chart_data"]["title"] = json_data.get("title")
+            data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
+            data["chart_data"]["datasets"] = []
 
-                sales_dict = {}
-                for product in pivot_df.columns[1:]:
-                    data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
+            sales_dict = {}
+            for product in pivot_df.columns[1:]:
+                data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
 
-            else:
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "radar"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] = result[columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
-                for i in range(1,len(columns)):
-                    data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
-                data["chart_data"]["x_axis"] = json_data.get("x_axis")
-                data["chart_data"]["y_axis"] = json_data.get("y_axis")
+            # else:
+            #     data["message"] = json_data.get("title")
+            #     data["chart_type"] = "radar"
+            #     data["chart_data"]={}
+            #     data["chart_data"]["title"] = json_data.get("title")
+            #     data["chart_data"]["labels"] = result[columns[0]].tolist()
+            #     data["chart_data"]["datasets"] = []
+            #     for i in range(1,len(columns)):
+            #         data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
+            #     data["chart_data"]["x_axis"] = json_data.get("x_axis")
+            #     data["chart_data"]["y_axis"] = json_data.get("y_axis")
         else:
             data["message"] = json_data.get("title")
             data["chart_type"] = "radar"
@@ -729,43 +729,43 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             col2_str = pd.api.types.is_string_dtype(result.iloc[:, 1])
             col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
             print("(col1_str and col2_str and col3_num)",(col1_str and col2_str and col3_num))
-            if (col1_str and col2_str and col3_num):
+            #if (col1_str and col2_str and col3_num):
                
-                # 2. Pivot the data
-                pivot_df = result.pivot_table(
-                    index=result.columns[0], 
-                    columns=result.columns[1], 
-                    values=result.columns[2],
-                    aggfunc='sum',
-                    fill_value=0
-                ).reset_index()
+            # 2. Pivot the data
+            pivot_df = result.pivot_table(
+                index=result.columns[0], 
+                columns=result.columns[1], 
+                values=result.columns[2],
+                aggfunc='sum',
+                fill_value=0
+            ).reset_index()
 
-                # 3. Create the dictionary
-                unique_states = pivot_df.index.tolist()
-                unique_products = pivot_df.columns.tolist()
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "line"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
+            # 3. Create the dictionary
+            unique_states = pivot_df.index.tolist()
+            unique_products = pivot_df.columns.tolist()
+            data["message"] = json_data.get("title")
+            data["chart_type"] = "line"
+            data["chart_data"]={}
+            data["chart_data"]["title"] = json_data.get("title")
+            data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
+            data["chart_data"]["datasets"] = []
 
-                sales_dict = {}
-                for product in pivot_df.columns[1:]:
-                    data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
-                data["chart_data"]["x_axis"] = json_data.get("x_axis")
-                data["chart_data"]["y_axis"] = json_data.get("y_axis")
-            else:
-                data["message"] = json_data.get("title")
-                data["chart_type"] = "line"
-                data["chart_data"]={}
-                data["chart_data"]["title"] = json_data.get("title")
-                data["chart_data"]["labels"] = result[columns[0]].tolist()
-                data["chart_data"]["datasets"] = []
-                for i in range(1,len(columns)):
-                    data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
-                data["chart_data"]["x_axis"] = json_data.get("x_axis")
-                data["chart_data"]["y_axis"] = json_data.get("y_axis")
+            sales_dict = {}
+            for product in pivot_df.columns[1:]:
+                data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
+            data["chart_data"]["x_axis"] = json_data.get("x_axis")
+            data["chart_data"]["y_axis"] = json_data.get("y_axis")
+            # else:
+            #     data["message"] = json_data.get("title")
+            #     data["chart_type"] = "line"
+            #     data["chart_data"]={}
+            #     data["chart_data"]["title"] = json_data.get("title")
+            #     data["chart_data"]["labels"] = result[columns[0]].tolist()
+            #     data["chart_data"]["datasets"] = []
+            #     for i in range(1,len(columns)):
+            #         data["chart_data"]["datasets"].append({ "label":  columns[i], "values":  result[columns[i]].tolist()})
+            #     data["chart_data"]["x_axis"] = json_data.get("x_axis")
+            #     data["chart_data"]["y_axis"] = json_data.get("y_axis")
         else:
             data["message"] = json_data.get("title")
             data["chart_type"] = "line"

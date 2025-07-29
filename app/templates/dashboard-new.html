@@ -189,6 +189,61 @@
                   <div class="col-lg-4 d-flex grid-margin stretch-card">
                     <div class="card {% if loop.index0 % 2 == 0 %}sale-diffrence-border{% else %}sale-visit-statistics-border{% endif %}">
                       <div class="card-body">
+                        {% if connection.type == 'folder' %}
+                        <div class="row">
+                          <div class="col-lg-9">
+                            <h2 class="text-dark mb-2 font-weight-bold db-title" id= "label-{{ connection.id }}" data-name="{{ connection.name }}">
+                                {{ connection.name }}
+                            </h2>
+                        </div>
+                          <div class="col-lg-3">
+                            <div class="dropdown">
+                              <a class="text-success btn btn-link px-1 edit-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
+                                <i class="mdi mdi-grease-pencil"></i>
+                              </a>
+                              <a class="text-success btn btn-link px-1 delete-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
+                                <i class="mdi mdi-delete"></i>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+              
+                        <h4 class="card-title mb-2 mt-2 db-subtitle">{{ connection.total_files }}</h4>
+                        
+                        <small class="text-muted">
+                          {% for file_type in connection.file_types %}
+                            {% if file_type == '.pdf' %}
+                            <i class="mdi mdi-file-pdf" title="{{ file_type }}"></i>
+                            {% elif file_type == '.txt' %}
+                              <i class="mdi mdi-file-document-outline" title="{{ file_type }}"></i>
+                            {% elif file_type == '.docx' %}
+                              <i class="mdi mdi-file-word" title="{{ file_type }}"></i>
+                            {% elif file_type == '.csv' %}
+                              <i class="mdi mdi-file-delimited" title="{{ file_type }}"></i>
+                            {% elif file_type == '.xls' or file_type == '.xlsx' %}
+                              <i class="mdi mdi-file-excel" title="{{ file_type }}"></i>
+                            {% else %}
+                              <span title="{{ file_type }}">{{ file_type }}</span>
+                            {% endif %}
+                          {% endfor %}
+                        </small><br>
+                        <small class="text-muted">Created: {{ connection.created_at.strftime('%b %d, %Y') }}</small><br>
+              
+                        <div class="d-flex align-items-center justify-content-between mt-3">
+
+                          <button type="button"
+                                  class="btn btn-inverse-dark btn-fw files-btn"
+                                  data-connection-id="{{ connection.id }}">
+                            Chat
+                          </button><br>
+              
+                          <button type="button"
+                                  class="btn btn-link btn-fw get-secret-btn"
+                                  data-connection-id="{{ connection.id }}">
+                            Get Secret
+                          </button>
+                        </div>
+                        {% else %}
                         <div class="row">
                           <div class="col-lg-9">
                             <h2 class="text-dark mb-2 font-weight-bold db-title" id= "label-{{ connection.id }}" data-name="{{ connection.name }}">
@@ -197,10 +252,10 @@
                         </div>
                           <div class="col-lg-3">
                             <div class="dropdown">
-                              <a class="text-success btn btn-link px-1 edit-connection" data-connection-id="{{ connection.id }}">
+                              <a class="text-success btn btn-link px-1 edit-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
                                 <i class="mdi mdi-grease-pencil"></i>
                               </a>
-                              <a class="text-success btn btn-link px-1 delete-connection" data-connection-id="{{ connection.id }}">
+                              <a class="text-success btn btn-link px-1 delete-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
                                 <i class="mdi mdi-delete"></i>
                               </a>
                             </div>
@@ -234,7 +289,14 @@
                             Get Secret
                           </button>
                         </div>
+
+
+                        {% endif %}
+
                       </div>
+                      
+
+                      
                     </div>
                   </div>
                 {% endfor %}

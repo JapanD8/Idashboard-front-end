@@ -16,3 +16,14 @@ gunicorn>=21.2.0
 PyMySQL==1.0.2
 PyJWT==2.10.1
 flask-cors==6.0.1
+#ragbot
+langchain-core
+langchain-google-genai
+langchain_experimental
+google-generativeai
+chromadb
+PyPDF2
+python-docx
+requests
+
+#package>=2.0.0

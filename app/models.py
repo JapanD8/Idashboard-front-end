@@ -1,6 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.types import JSON as GenericJSON
+import json
 
 class User(db.Model, UserMixin):
     __tablename__ = "user"
@@ -66,3 +67,61 @@ class AccesstokenData(db.Model):
     schema = db.Column(GenericJSON, nullable=False) 
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     
+
+
+# ragbot Tables
+
+class UserFolder(db.Model):
+    __tablename__ = "user_folder"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    total_files = db.Column(db.Integer, default=0)
+    file_types_json = db.Column(db.Text, default='[]')
+    status = db.Column(db.String(50), default='active')
+
+    user = db.relationship('User', backref='folders')
+    messages = db.relationship('RagMessage', backref='folder', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
+    #messages = db.relationship('RagMessage', backref='chat_session', lazy=True, cascade="all, delete-orphan", passive_deletes=True)
+    ### folder = UserFolder.query.get(folder_id)
+    ### db.session.delete(folder)
+    ### db.session.commit() 
+
+    @property
+    def file_types(self):
+        return json.loads(self.file_types_json or '[]')
+
+    @file_types.setter
+    def file_types(self, types_list):
+        self.file_types_json = json.dumps(types_list)
+
+
+class Files(db.Model):
+    __tablename__ = "user_files"
+    id = db.Column(db.Integer, primary_key=True)
+    original_name = db.Column(db.String(200))
+    saved_name = db.Column(db.String(200))
+    size = db.Column(db.Integer)
+    folder_id = db.Column(db.Integer, db.ForeignKey('user_folder.id'), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    status = db.Column(db.String(50), default='active')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'original_name': self.original_name,
+            'saved_name': self.saved_name,
+            'size': self.size,
+            'folder_id': self.folder_id,
+            'uploaded_at': self.uploaded_at
+        }
+
+class RagMessage(db.Model):
+    __tablename__ = "rag_messages"
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(255), db.ForeignKey('chat_sessions.session_id'), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    sender = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    db_id = db.Column(db.Integer, db.ForeignKey('user_folder.id', ondelete="CASCADE"), index=True, nullable=True)

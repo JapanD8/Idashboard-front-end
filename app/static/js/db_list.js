@@ -25,16 +25,19 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("confirmBtn",confirmBtn)
     console.log("cancelBtn",cancelBtn)
     let currentConnectionId = null;
+    let currentConnectiontype =null;
 
     // Function to open the modal
-    function openModal(connectionId) {
+    function openModal(connectionId,connectiontype) {
       currentConnectionId = connectionId;
+      currentConnectiontype =connectiontype;
       $('#confirmModal').modal('show');
       console.log('Modal opened for connection ID:', connectionId);
     }
     
     function closeModal() {
       currentConnectionId = null;
+      currentConnectiontype =null;
       $('#confirmModal').modal('hide');
       console.log('Modal closed');
     }
@@ -42,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function editcloseModal() {
         currentConnectionId = null;
+        currentConnectiontype =null;
         editModal.style.display = 'none';
         console.log('Modal closed'); // Log that the modal is closed
     
@@ -148,8 +152,9 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.addEventListener('click', function(event) {
             event.stopPropagation(); 
             const connectionId = this.getAttribute('data-connection-id');
+            const Connectiontype = this.getAttribute('data-connections-type');
             console.log('Delete icon clicked with connection ID:', connectionId); 
-            openModal(connectionId);
+            openModal(connectionId, Connectiontype);
         });
     })
 
@@ -175,11 +180,13 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmBtn.addEventListener('click', function() {
         if (currentConnectionId) {
             console.log('Confirm delete clicked for connection ID:', currentConnectionId); // Log the connection ID
+            const deledata = {connectionid: currentConnectionId, type : currentConnectiontype};
             fetch(`/connections/${currentConnectionId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify(deledata)
             })
             .then(response => response.json())
             .then(data => {
@@ -206,6 +213,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // files chat button
+    const filechatButtons = document.querySelectorAll('.btn.btn-inverse-dark.btn-fw.files-btn');
+    console.log("filechatButtons",filechatButtons); 
+
+    filechatButtons.forEach(button => {
+        button.addEventListener("click", function(){
+          console.log("Chat button clicked!");
+          const chatId = button.getAttribute("data-connection-id");
+          const savedStatus = sessionStorage.getItem(`conn_status_${chatId}`);
+          console.log("connectButton",chatId,savedStatus);
+          window.location.href =  `/rb/chat/${chatId}`;
+          //
+        });
+      });
 
 
     //chat button

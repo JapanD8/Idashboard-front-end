@@ -6,6 +6,13 @@ from flask_login import LoginManager
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import OperationalError
 from dotenv import load_dotenv
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,  # or DEBUG
+    format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -61,7 +68,13 @@ def create_app():
     
 
     # ✅ Register routes
-    from .routes import main
+    #from .routes import main
+    #app.register_blueprint(main)
+    from app.applications.idashboard import main
+    from app.applications.ragchat import ragchat
+
+
     app.register_blueprint(main)
+    app.register_blueprint(ragchat)
 
     return app

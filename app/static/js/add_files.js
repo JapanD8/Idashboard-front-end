@@ -335,7 +335,7 @@ function uploadFiles() {
         resetUploadState();
     });
 
-    xhr.open('POST', '/uploadfiles');
+    xhr.open('POST', '/rb/uploadfiles');
     xhr.send(formData);
 }
 
