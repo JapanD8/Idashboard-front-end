@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
           if (successAlert) successAlert.style.display = "none";
           window.location.href = "/dashboard";
-        }, 3000);
+        }, 1000);
       } else {
         // ❌ Show error alert
         showError(data.message || "Invalid email or password!");
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setTimeout(() => {
         errorAlert.style.display = "none";
-      }, 3000);
+      }, 1000);
     }
   }
 });
