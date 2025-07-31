@@ -127,7 +127,7 @@
                   </p>
                   <form class="forms-sample">
                         <div class="form-group">
-                                  <label for="name">Name</label>
+                                  <label for="name">Name 5</label>
                                   <input type="text" class="form-control" id="name" placeholder="Reference name">
                                   <span class="error"></span>
                                 </div>
@@ -206,6 +206,18 @@
  <!-- <script src="/static/template/assets/js/typeahead.js"></script>-->
   <script src="{{ url_for('static', filename='js/connection_form.js') }}"></script>
   <!-- End custom js for this page-->
+
+<!-- Green Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+  <div id="dbToast" class="toast border-0 text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ✅ Database added successfully!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

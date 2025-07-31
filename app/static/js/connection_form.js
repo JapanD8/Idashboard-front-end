@@ -104,10 +104,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(data)
             })
             .then(response => {
-                if (response.status === 200) {
-                    alert("Database added successfully")
-                    window.location.href = '/dashboard'; // Redirect to another page
-                } else {
+               if (response.status === 200) {
+    const toastEl = document.getElementById('dbToast');
+    if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 3000);
+    } else {
+        console.error("Toast element not found in DOM");
+    }
+} else {
                     console.error('Error:', response.status);
                 }
             })
