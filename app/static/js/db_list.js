@@ -105,40 +105,48 @@ document.addEventListener('DOMContentLoaded', function() {
           
           
       // Inside modal update button
-      document.getElementById('db-update-button').addEventListener('click', function(event) {
-        event.preventDefault();
-        const connectionId = document.getElementById('edit-modal').getAttribute('data-connection-id');
-        const data = {
-          name: document.getElementById('name').value,
-          dbname: document.getElementById('database').value,
-          user: document.getElementById('user').value,
-          password: document.getElementById('password').value,
-          host: document.getElementById('host').value,
-          port: document.getElementById('port').value
-        };
-      
-        fetch(`/api/connections/${connectionId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            
+     document.getElementById('db-update-button').addEventListener('click', function(event) {
+    event.preventDefault();
+    const connectionId = document.getElementById('edit-modal').getAttribute('data-connection-id');
+    const data = {
+        name: document.getElementById('name').value,
+        dbname: document.getElementById('database').value,
+        user: document.getElementById('user').value,
+        password: document.getElementById('password').value,
+        host: document.getElementById('host').value,
+        port: document.getElementById('port').value
+    };
+
+    fetch(`/api/connections/${connectionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
             const modal = bootstrap.Modal.getInstance(document.getElementById('edit-modal'));
             modal.hide();
-            alert('Connection updated successfully!');
-            window.location.href = "/databases";
-            // Close the modal or redirect to another page
-          } else {
+
+            const toastEl = document.getElementById('updateToast');
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+                toast.show();
+
+                setTimeout(() => {
+                    window.location.href = "/databases";
+                }, 3000);
+            } else {
+                console.warn('Toast element not found');
+                window.location.href = "/databases";
+            }
+        } else {
             console.error('Error updating connection:', data.error);
-          }
-        })
-        .catch(error => console.error('Error updating connection:', error));
-      });
+        }
+    })
+    .catch(error => console.error('Error updating connection:', error));
+});
+
 
 
     // Event listener for delete icons
