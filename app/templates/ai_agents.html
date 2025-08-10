@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/static/template/assets/css/style.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="static/template/images/favicon.ico" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ai_agents.css') }}"> 
   </head>
   <body>
     <div class="container-scroller">
@@ -57,13 +58,6 @@
                         <i class="mdi mdi-settings text-primary"></i>
                         Settings
                       </a>
-                      {% if role %}
-                      <a class="dropdown-item" href="#">
-                        <i class="mdi mdi-account-plus text-primary"></i>
-                        Permission
-                      </a>
-                      {% endif %}
-
                       <a id="logout-button" class="dropdown-item">
                         <i class="mdi mdi-logout text-primary"></i>
                         Logout
@@ -106,21 +100,57 @@
                     <i class="menu-arrow"></i>
                   </a>
               </li>
-             
+              <!--<li class="nav-item">
+                  <a href="pages/charts/chartjs.html" class="nav-link">
+                    <i class="mdi mdi-finance menu-icon"></i>
+                    <span class="menu-title">Charts</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="pages/tables/basic-table.html" class="nav-link">
+                    <i class="mdi mdi-grid menu-icon"></i>
+                    <span class="menu-title">Tables</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="pages/icons/mdi.html" class="nav-link">
+                    <i class="mdi mdi-emoticon menu-icon"></i>
+                    <span class="menu-title">Icons</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="mdi mdi-codepen menu-icon"></i>
+                    <span class="menu-title">Sample Pages</span>
+                    <i class="menu-arrow"></i>
+                  </a>
+                  <div class="submenu">
+                      <ul class="submenu-item">
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/login.html">Login</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/login-2.html">Login 2</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/register.html">Register</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/register-2.html">Register 2</a></li>
+                          <li class="nav-item"><a class="nav-link" href="pages/samples/lock-screen.html">Lockscreen</a></li>
+                      </ul>
+                  </div>
+              </li>-->
               <li class="nav-item">
                   <a  class="nav-link">
                     <i class="mdi mdi-file-document-box-outline menu-icon"></i>
                     <span class="menu-title">Documentation</span></a>
               </li>
+
               {% if role %}
-              <li class="nav-item" >
-                <a href="/admin/permission" class="nav-link">
+              <li class="nav-item">
+                <a  class="nav-link">
                   <i class="mdi mdi-account-multiple-plus menu-icon"></i>
                   <span class="menu-title">Share</span></a>
             </li>
             {% endif %}
-
-
+              
             </ul>
         </div>
       </nav>
@@ -132,14 +162,11 @@
 					<div class="row">
 						<div class="col-sm-6 mb-3">
 							<div class="d-lg-flex align-items-center">
-								<div>
-									<h3 class="text-dark font-weight-bold mb-2">Hi, welcome back!</h3>
-									<!--<h6 class="font-weight-normal mb-2">Last login was 23 hours ago. </h6>-->
-								</div>
+								
 								
 							</div>
 						</div>
-					<div class="col-sm-6">
+					   <div class="col-sm-6">
 							<div class="d-flex align-items-center justify-content-md-end">
 								<!--<div class="pe-1 mb-3 mb-xl-0">
 										<button type="button" class="btn btn-outline-inverse-info btn-icon-text">
@@ -153,92 +180,143 @@
 											<i class="mdi mdi-help-circle-outline btn-icon-append"></i>                          
 									</button>
 								</div>-->
-								<div class="pe-1 mb-3 mb-xl-0">
+								 <!--<div class="pe-1 mb-3 mb-xl-0">
 										<button type="button" class="btn btn-primary btn-icon-text" onclick="window.open('/add-database')">
-  <!-- <i class="mdi mdi-printer btn-icon-append"></i> --> + &nbsp; Add Database
-</button>
-
-								</div>
+ <i class="mdi mdi-printer btn-icon-append"></i>  + &nbsp; Add Database</button>
+								</div> -->
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<div class="col-lg-12 flex-column d-flex stretch-card">
-							<div class="row" id="connections-data" data-connections="{{ connections }}">
-                {% for connection in connections %}
-                  <div class="col-lg-4 d-flex grid-margin stretch-card">
-                    <div class="card {% if loop.index0 % 2 == 0 %}sale-diffrence-border{% else %}sale-visit-statistics-border{% endif %}">
-                      <div class="card-body">
-                        
-                        <div class="row">
-                          <div class="col-lg-9">
-                            <h2 class="text-dark mb-2 font-weight-bold db-title" id= "label-{{ connection.id }}" data-name="{{ connection.name }}">
-                                {{ '🟢' if connection.status == 'connected' else '🔴' }} {{ connection.name }}
-                            </h2>
-                        </div>
-                          <div class="col-lg-3">
-                            <div class="dropdown">
-                              <a class="text-success btn btn-link px-1 edit-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
-                                <i class="mdi mdi-grease-pencil"></i>
-                              </a>
-                              <a class="text-success btn btn-link px-1 delete-connection" data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
-                                <i class="mdi mdi-delete"></i>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-              
-                        <h4 class="card-title mb-2 mt-2 db-subtitle">{{ connection.database }}</h4>
-                        <small class="text-muted">{{ connection.host }}</small><br>
-                        <small class="text-muted">Created: {{ connection.created_at.strftime('%b %d, %Y') }}</small><br>
-              
-                        <div class="d-flex align-items-center justify-content-between mt-3">
-                       
-                           
-                          <button type="button"
-                                  class="btn btn-fw connect-btn pushme2 
-                                        {% if connection.status == 'connected' %}btn-connected btn-inverse-danger{% else %}btn-disconnected btn-inverse-success{% endif %}"
-                                  data-connection-id="{{ connection.id }}" 
-                                  data-status="{% if connection.status == 'connected' %}connected{% else %}disconnected{% endif %}">
-                              {% if connection.status == 'connected' %}Disconnect{% else %}Connect{% endif %}
-                          </button><br>
-              
-                          <button type="button"
-                                  class="btn btn-inverse-dark btn-fw chat-btn"
-                                  data-connection-id="{{ connection.id }}">
-                            Chat
-                          </button><br>
-              
-                          <button type="button"
-                                  class="btn btn-link btn-fw get-secret-btn"
-                                  data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
-                            Get Secret
-                          </button>
-                        </div>
-
-
-                   
-
-                      </div>
-                      
-
-                      
-                    </div>
-                  </div>
-                {% endfor %}
+					
+          <!-- Main Container -->
+    <div class="container-agent">
+      <!-- Agent Cards -->
+      <div class="agents-grid">
+          <div class="agent-card dock" data-agent="dock">
+              <div class="agent-header">
+                  <div class="agent-status"></div>
+                  <img class="agent-icon" src="/static/template/images/ai_assiatant.png" alt="logo"/>
+                  <div class="agent-title">Document Assistant</div>
               </div>
-              
-							
-						</div>
-						
-					</div>
-					
-					
-					
-					
+               <!-- <div class="agent-actions">
+                  <button class="action-btn">✏️</button>
+                  <button class="action-btn">🗑️</button>
+              </div> -->
+              <div class="agent-description">Doc Intelligence System</div>
+              <!-- <div class="agent-meta">Created: Jul 30, 2025</div> -->
+              <div class="agent-buttons">
+                  <button class="btn btn-connect" onclick="openUploadModal('dock')">Add Topic</button>
+              </div>
+          </div>
+
+          <div class="agent-card hr" data-agent="hr">
+              <div class="agent-header">
+                  <div class="agent-status"></div>
+                  <img class="agent-icon" src="/static/template/images/ai_assiatant1.png" alt="logo"/>
+                  <div class="agent-title">HR Assistant</div>
+              </div>
+               <!-- <div class="agent-actions">
+                  <button class="action-btn">✏️</button>
+                  <button class="action-btn">🗑️</button>
+              </div> -->
+              <div class="agent-description">Human Resources System</div>
+              <!-- <div class="agent-meta">Created: Jul 30, 2025</div> -->
+              <div class="agent-buttons">
+                  <button class="btn btn-connect" onclick="openUploadModal('hr')">Add Topic</button>
+              </div>
+               <!--<div class="overlay">
+                <span>Coming Soon...</span>-->
+            </div>
+
+            <div class="agent-card fin" data-agent="fin">
+              <div class="agent-header">
+                  <div class="agent-status"></div>
+                  <div class="agent-title">Data Analysis Assistant</div>
+              </div>
+              <!--<div class="agent-actions">
+                  <button class="action-btn">✏️</button>
+                  <button class="action-btn">🗑️</button>
+              </div>-->
+              <div class="agent-description">Analysis Management System</div>
+              <div class="agent-buttons">
+                  <button class="btn btn-connect" onclick="openUploadModal('fin')">Add Topic</button>
+              </div>
+          </div>
+        </div>
+
+
+          
+    </div>
+
+          
+    
+
+      <!-- Filter Buttons -->
+      <div class="filter-section">
+          <button class="filter-btn active " onclick="filterTopics('all')" id="filter-all">All Topics</button>
+          <button class="filter-btn" onclick="filterTopics('dock')" id="filter-dock">Doc Topics</button>
+          <button class="filter-btn" onclick="filterTopics('hr')" id="filter-hr">HR Topics</button>
+          <button class="filter-btn" onclick="filterTopics('fin')" id="filter-fin">DA Topics</button>
+      </div>
+
+      <!-- Topics Section -->
+      <div class="topics-section">
+          <h2 class="section-title">Topics</h2>
+          <div class="topics-grid" id="topics-container">
+              <!-- Topics will be populated here -->
+          </div>
+      </div>
+  </div>
+
+    
+
+
+
+
+
 				</div>
 
+        
 
+
+
+        <!-- Upload Modal -->
+        <div class="modal-overlay" id="uploadModal" style="display: none;">
+          <div class="modal-up">
+              <div class="modal-header">
+                  <h3 class="modal-title">Upload Topic</h3>
+                  <button class="close-btn" onclick="closeUploadModal()">&times;</button>
+              </div>
+              <form id="uploadForm">
+                  <div class="form-group">
+                      <label class="form-label">Topic Name</label>
+                      <input type="text" class="form-input" id="topicName" placeholder="Enter topic name" required>
+                  </div>
+                  <div class="form-group">
+                      <label class="form-label">Agent Type</label>
+                      <input type="text" class="form-input" id="agentType" readonly>
+                  </div>
+                  <div class="form-group">
+                      <label class="form-label">Upload File</label>
+                      <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                          <div class="upload-icon">📁</div>
+                          <div class="upload-text">Click to upload or drag and drop (multiple files allowed)</div>
+                          <div style="font-size: 0.75rem; color: #9ca3af;">PDF, DOC, TXT files up to 200MB</div>
+                      </div>
+                      <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt" multiple>
+                      <div id="selectedFiles"></div>
+                      <div id="uploadProgress"></div>
+                      <div id="selectedFiles"></div>
+                  </div>
+                  <div class="modal-actions">
+                      <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                      <button type="submit" class="btn-primary">Submit</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+
+      
 
         
         <!-- Modal -->
@@ -367,11 +445,12 @@
 		<script src="/static/template/vendors/chartjs-plugin-datalabels/chartjs-plugin-datalabels.js"></script>
 		<script src="/static/template/vendors/justgage/raphael-2.1.4.min.js"></script>
 		<script src="/static/template/vendors/justgage/justgage.js"></script>
-    <script src="/static/template/assets/js/jquery.cookie.js" type="text/javascript"></script>
+    <!-- <script src="/static/template/assets/js/jquery.cookie.js" type="text/javascript"></script>-->
     <!-- Custom js for this page-->
-    <script src="/static/template/assets/js/dashboard.js"></script>
+    <!-- <script src="/static/template/assets/js/dashboard.js"></script>-->
     <script src="{{ url_for('static', filename='js/add_database.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/db_list.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rb/ai_agents.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rb/file_upload.js') }}"></script>
     <!-- End custom js for this page-->
    
   </body>

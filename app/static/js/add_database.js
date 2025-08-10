@@ -18,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
-    // Logout functionality
+    const logoutButton = document.getElementById('logout-button');
+
     logoutButton.addEventListener('click', () => {
       sessionStorage.clear();
       localStorage.clear();

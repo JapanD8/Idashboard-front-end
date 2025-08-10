@@ -57,10 +57,35 @@ def authenticate(f):
 def home():
     return render_template('login.html')
 
+# @main.route('/admin')
+# def home_admin():
+#     return render_template('login_admin.html')
+
 
 @main.errorhandler(401)
 def unauthorized(e):
     return redirect(url_for('main.login'))
+
+
+
+# @main.route("/admin-register",  methods=["GET", "POST"])
+# def admin_register():
+#     if request.method == "POST":
+#         data = request.get_json()
+#         print("register data",data)
+#         email = data.get("email")
+#         password = data.get("password")
+
+#         if User.query.filter_by(email=email).first():
+#             return jsonify({"message": "User already exists"}), 409
+
+#         hashed_pw = generate_password_hash(password)
+#         new_user = User(email=email, password=hashed_pw, role="admin")
+#         db.session.add(new_user)
+#         db.session.commit()
+#         return jsonify({"message": "Registered successfully"}), 200
+
+#     return render_template("register_admin.html")
 
 @main.route("/register",  methods=["GET", "POST"])
 def register():
@@ -74,7 +99,7 @@ def register():
             return jsonify({"message": "User already exists"}), 409
 
         hashed_pw = generate_password_hash(password)
-        new_user = User(email=email, password=hashed_pw)
+        new_user = User(email=email, password=hashed_pw, role="user")
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "Registered successfully"}), 200
@@ -123,21 +148,25 @@ def dashboard():
     if current_user.is_authenticated:
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
+        print("current_user.role",current_user.role)
 
-        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
-
+        #folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+        if current_user.role == "admin":
+            is_admin = True
+        else:
+            is_admin = False
         for conn in connections:
             conn.type = 'connection'
             
-        for folder in folder_list:
-            folder.type = 'folder'
-            folder.file_types = json.loads(folder.file_types_json)
+        # for folder in folder_list:
+        #     folder.type = 'folder'
+        #     folder.file_types = json.loads(folder.file_types_json)
 
-        # Merge and sort by created_at
-        combined = list(chain(connections, folder_list))
-        combined_sorted = sorted(combined, key=lambda x: x.created_at)
+        # # Merge and sort by created_at
+        # combined = list(chain(connections, folder_list))
+        # combined_sorted = sorted(combined, key=lambda x: x.created_at)
         
-        return render_template('dashboard-new.html', connections=combined_sorted, email=current_user.email)
+        return render_template('dashboard-new.html', connections=connections, email=current_user.email, role=is_admin)
     else:
         return redirect(url_for('/login'))
 
@@ -148,20 +177,24 @@ def databases():
     if current_user.is_authenticated:
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
-        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+        #folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+        if current_user.role == "admin":
+            is_admin = True
+        else:
+            is_admin = False
 
         for conn in connections:
             conn.type = 'connection'
             
-        for folder in folder_list:
-            folder.type = 'folder'
-            folder.file_types = json.loads(folder.file_types_json)
+        # for folder in folder_list:
+        #     folder.type = 'folder'
+        #     folder.file_types = json.loads(folder.file_types_json)
 
-        # Merge and sort by created_at
-        combined = list(chain(connections, folder_list))
-        combined_sorted = sorted(combined, key=lambda x: x.created_at)
+        # # Merge and sort by created_at
+        # combined = list(chain(connections, folder_list))
+        # combined_sorted = sorted(combined, key=lambda x: x.created_at)
         
-        return render_template('dashboard-new.html', connections=combined_sorted, email=current_user.email)
+        return render_template('dashboard-new.html', connections=connections, email=current_user.email, role=is_admin)
     else:
         return redirect(url_for('/login'))
 
@@ -723,7 +756,8 @@ def embed_chart(embed_id):
 def get_key():
     db_id = request.json['db_id']
     user_id = request.json['user_id']
-    print("conversation",db_id,user_id)
+    con_type = request.json['contype']
+    print("conversation",db_id,user_id, con_type)
     token,secret =  create_access_token(user_id,db_id)
 
     return jsonify({'success': True, 'secret_key': secret})

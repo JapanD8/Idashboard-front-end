@@ -252,8 +252,8 @@ allTreeItems.forEach(item => {
 window.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded");
 
-    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
-    // Logout functionality
+    const logoutButton = document.getElementById('logout-button');
+
     logoutButton.addEventListener('click', () => {
       sessionStorage.clear();
       localStorage.clear();

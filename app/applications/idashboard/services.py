@@ -352,7 +352,8 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
             col1_str = pd.api.types.is_string_dtype(result.iloc[:, 0])
             col2_str = pd.api.types.is_string_dtype(result.iloc[:, 1])
             col3_num = pd.api.types.is_numeric_dtype(result.iloc[:, 2])
-            
+            print("(col1_str and col2_str and col3_num)",(col1_str and col2_str and col3_num))
+            #if (col1_str and col2_str and col3_num):
                
             # 2. Pivot the data
             pivot_df = result.pivot_table(
@@ -361,15 +362,21 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
                 values=result.columns[2],
                 aggfunc='sum',
                 fill_value=0
-            )
+            ).reset_index()
 
             # 3. Create the dictionary
             unique_states = pivot_df.index.tolist()
             unique_products = pivot_df.columns.tolist()
+            data["message"] = json_data.get("title")
+            data["chart_type"] = "stackBar"
+            data["chart_data"]={}
+            data["chart_data"]["title"] = json_data.get("title")
+            data["chart_data"]["labels"] =  pivot_df[result.columns[0]].tolist()
+            data["chart_data"]["datasets"] = []
 
             sales_dict = {}
-            for product in unique_products:
-                sales_dict[product] = pivot_df[product].tolist()
+            for product in pivot_df.columns[1:]:
+                data["chart_data"]["datasets"].append({"label": product,"values": pivot_df[product].tolist()})
             # else:
             #     print("bar with line entered")
             #     data["message"] = json_data.get("title")

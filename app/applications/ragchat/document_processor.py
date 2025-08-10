@@ -51,6 +51,7 @@ UPLOAD_DIR = "uploads"
 # os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Initialize ChromaDB
+chroma_client = chromadb.Client(Settings(anonymized_telemetry=False))
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
 collection = chroma_client.get_or_create_collection(
     name="document_chunks",

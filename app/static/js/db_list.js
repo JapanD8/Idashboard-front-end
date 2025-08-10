@@ -357,9 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
       label.addEventListener('click', function(event) {
         event.stopPropagation(); // Prevent any parent event handlers from being triggered
         const connectionId = this.getAttribute('data-connection-id');
+        const contype = this.getAttribute('data-connections-type');
         console.log('Get secret label clicked with connection ID:', connectionId); // Log the connection ID
         const user_id = localStorage.getItem("user_id")
-        const secretdata = {user_id: user_id,db_id:connectionId};
+        const secretdata = {user_id: user_id,db_id:connectionId, contype:contype};
         console.log(secretdata)
         // Make a GET request to fetch the secret key
         fetch(`/get_secret`, {
@@ -404,8 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
        
     };
 
-    const logoutButton = document.querySelector('.dropdown-menu .dropdown-item:nth-child(2)');
-    // Logout functionality
+    const logoutButton = document.getElementById('logout-button');
+
     logoutButton.addEventListener('click', () => {
       sessionStorage.clear();
       localStorage.clear();

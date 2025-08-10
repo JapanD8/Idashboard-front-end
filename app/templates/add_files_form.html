@@ -62,7 +62,7 @@
                         <i class="mdi mdi-settings text-primary"></i>
                         Settings
                       </a>
-                      <a class="dropdown-item">
+                      <a id="logout-button" class="dropdown-item">
                         <i class="mdi mdi-logout text-primary"></i>
                         Logout
                       </a>
@@ -85,9 +85,9 @@
                 </a>
               </li>
               <li class="nav-item">
-                  <a href="#" class="nav-link" >
+                  <a href="/rb/assitant" class="nav-link" >
                     <i class="mdi mdi-cube-outline menu-icon"></i>
-                    <span class="menu-title">AI Settings</span>
+                    <span class="menu-title">AI Agent</span>
                     <i class="menu-arrow"></i>
                   </a>
                  <!-- <div class="submenu">
@@ -146,6 +146,16 @@
                     <i class="mdi mdi-file-document-box-outline menu-icon"></i>
                     <span class="menu-title">Documentation</span></a>
               </li>
+
+              {% if role %}
+              <li class="nav-item">
+                <a  class="nav-link">
+                  <i class="mdi mdi-account-multiple-plus menu-icon"></i>
+                  <span class="menu-title">Share</span></a>
+            </li>
+            {% endif %}
+
+
             </ul>
         </div>
       </nav>
@@ -230,7 +240,7 @@
   <!-- Plugin js for this page-->
   <!-- End plugin js for this page-->
   <!-- inject:js -->
-  <script src="/static/template/assets/js/template.js"></script>
+  <!-- <script src="/static/template/assets/js/template.js"></script> -->
   <!-- endinject -->
   
   <script src="/static/template/vendors/select2/select2.min.js"></script>

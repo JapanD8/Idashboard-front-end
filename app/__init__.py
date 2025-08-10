@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
+os.environ['POSTHOG_DISABLED'] = 'true'
 
 def create_app():
     load_dotenv()
@@ -62,8 +63,8 @@ def create_app():
     with app.app_context():
         inspector = inspect(db.engine)
         existing_tables = inspector.get_table_names()
-        if not {'user', 'db_connections'}.issubset(existing_tables):
-            db.create_all()
+        # if not {'user', 'db_connections'}.issubset(existing_tables):
+        #     db.create_all()
 
     
 
@@ -72,9 +73,11 @@ def create_app():
     #app.register_blueprint(main)
     from app.applications.idashboard import main
     from app.applications.ragchat import ragchat
+    from app.applications.admin import admin
 
 
     app.register_blueprint(main)
     app.register_blueprint(ragchat)
+    app.register_blueprint(admin)
 
     return app

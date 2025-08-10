@@ -19,7 +19,6 @@ flask-cors==6.0.1
 #ragbot
 langchain-core
 langchain-google-genai
-langchain_experimental
 google-generativeai
 chromadb
 PyPDF2

@@ -9,6 +9,7 @@ executor = ThreadPoolExecutor(max_workers=3)
 from .services import background_task, search_documents, clean_html_response
 import os
 import logging
+import json
 logger = logging.getLogger(__name__)
 
 from langchain_google_genai import GoogleGenerativeAI
@@ -31,14 +32,14 @@ def upload_files():
     try:
         user_id = current_user.id
 
-        folder_name = request.form.get('folderName')
+        folder_name = request.form.get('topicName')
         if not folder_name:
             return jsonify({'error': 'Folder name is required'}), 400
 
         files = request.files.getlist('files')
         
-        if not files or all(file.filename == '' for file in files):
-            return jsonify({'error': 'No files selected'}), 400
+        # if not files or all(file.filename == '' for file in files):
+        #     return jsonify({'error': 'No files selected'}), 400
 
         file_types = set([os.path.splitext(file.filename)[1] for file in files])
 
@@ -70,7 +71,8 @@ def upload_files():
                     original_name=original_name,
                     saved_name=filename,
                     size=file_size,
-                    folder_id=new_folder.id
+                    folder_id=new_folder.id,
+                    status = 'active'
                 )
                 bulk_file_records.append(file_record)
                 uploaded_files.append({
@@ -105,7 +107,7 @@ def upload_files():
         #     'total_files': len(uploaded_files),
         #     'total_size': sum(file['size'] for file in uploaded_files)
         # }), 200
-        return jsonify({"message": f"Task '{"1"}' submitted"}), 200
+        return jsonify({"message": f"Task 1 submitted"}), 200
     except Exception as e:
         return jsonify({'error': f'Upload failed: {str(e)}'}), 500
 
@@ -424,3 +426,62 @@ def chat_ai_rag():
         return jsonify({'success': True, 'data': data})
     else:
         return redirect(url_for('/login'))
+
+
+
+@ragchat.route("/assitant")
+@login_required
+def get_assitant():
+    if current_user.role == "admin":
+        is_admin = True
+    else:
+        is_admin = False
+    return render_template("ai_agents.html", role=is_admin)
+
+
+
+
+@ragchat.route("/api/topics")
+@login_required
+def get_topics():
+
+    if current_user.is_authenticated:
+        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()  
+        folders=[]
+        # folders = [
+        #             {
+        #                 'id': folder.id,
+        #                 'name': folder.name,
+        #                 'user_id': folder.user_id,
+        #                 'created_at': folder.created_at,
+        #                 'total_files': folder.total_files,
+        #                 'file_types': json.loads(folder.file_types_json),
+        #                 'type': 'folder',
+        #                 'agent': 'dock',
+        #                 'description': 'Doc Management'
+        #             } for folder in folder_list
+        #         ]
+        count=0
+        for folder in folder_list:
+            count+=1
+           
+            name=folder.name
+            file_ ={
+                        'id': folder.id,
+                        'name': name,
+                        'user_id': folder.user_id,
+                        'created_at': folder.created_at,
+                        'total_files': folder.total_files,
+                        'file_types': json.loads(folder.file_types_json),
+                        'type': 'folder',
+                        'agent': 'dock',
+                        'description': 'Doc Management'
+                    }
+            folders.append(file_)
+
+        # Merge and sort by created_at
+        # combined = list(chain(connections, folder_list))
+        # combined_sorted = sorted(combined, key=lambda x: x.created_at)
+        
+        return jsonify({'success': True, 'data': folders}) , 200
+  
