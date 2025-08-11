@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteIcons = document.querySelectorAll('.text-success.btn.btn-link.px-1.delete-connection');
     const editIcons = document.querySelectorAll('.text-success.btn.btn-link.px-1.edit-connection');
 
-    console.log("deleteIcons",deleteIcons); // Log the NodeList to verify it's correct
-    console.log("editIcons",editIcons)
+    //console.log("deleteIcons",deleteIcons); // Log the NodeList to verify it's correct
+    //console.log("editIcons",editIcons)
 
     const confirmModal = document.getElementById('confirmModal');
     const editModal = document.getElementById('edit-modal');
@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const closesecret = document.getElementById('close-btn');
     const cancelBtn = document.getElementById('cancelDeleteBtn');
     const confirmBtn = document.getElementById('confirmDeleteBtn');
-    console.log("confirmBtn",confirmBtn)
-    console.log("cancelBtn",cancelBtn)
+    //console.log("confirmBtn",confirmBtn)
+    //console.log("cancelBtn",cancelBtn)
     let currentConnectionId = null;
     let currentConnectiontype =null;
 
@@ -32,14 +32,14 @@ document.addEventListener('DOMContentLoaded', function() {
       currentConnectionId = connectionId;
       currentConnectiontype =connectiontype;
       $('#confirmModal').modal('show');
-      console.log('Modal opened for connection ID:', connectionId);
+      //console.log('Modal opened for connection ID:', connectionId);
     }
     
     function closeModal() {
       currentConnectionId = null;
       currentConnectiontype =null;
       $('#confirmModal').modal('hide');
-      console.log('Modal closed');
+      //console.log('Modal closed');
     }
 
     
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentConnectionId = null;
         currentConnectiontype =null;
         editModal.style.display = 'none';
-        console.log('Modal closed'); // Log that the modal is closed
+        //console.log('Modal closed'); // Log that the modal is closed
     
     }
 
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.addEventListener('click', function(event) {
           event.stopPropagation(); // Prevent any parent event handlers from being triggered
           const connectionId = this.getAttribute('data-connection-id');
-          console.log('Edit icon clicked with connection ID:', connectionId); // Log the connection ID
+          //console.log('Edit icon clicked with connection ID:', connectionId); // Log the connection ID
       
           // Make a GET request to fetch the connection data
           fetch(`/api/connections/${connectionId}`, {
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
           .then(data => {
             if (data) {
               // Set the values to the edit modal
-              console.log(data)
+              //console.log(data)
               document.getElementById('name').value = data.data.name;
               document.getElementById('host').value = data.data.host;
               document.getElementById('database').value = data.data.dbname;
@@ -145,15 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener for delete icons
     
-    console.log('Number of delete icons found:', deleteIcons.length);
+    //console.log('Number of delete icons found:', deleteIcons.length);
 
     deleteIcons.forEach(icon => {
-        console.log('Attaching event listener to:', icon);
+        //console.log('Attaching event listener to:', icon);
         icon.addEventListener('click', function(event) {
             event.stopPropagation(); 
             const connectionId = this.getAttribute('data-connection-id');
             const Connectiontype = this.getAttribute('data-connections-type');
-            console.log('Delete icon clicked with connection ID:', connectionId); 
+            //console.log('Delete icon clicked with connection ID:', connectionId); 
             openModal(connectionId, Connectiontype);
         });
     })
@@ -165,9 +165,9 @@ document.addEventListener('DOMContentLoaded', function() {
     cancelBtn.addEventListener('click', closeModal);
 
     cancelBtn.addEventListener('click', function() {
-      console.log("secretKeyModal close called")
+      //console.log("secretKeyModal close called")
       const secretKeyModal = bootstrap.Modal.getInstance(document.getElementById('secret-key-modal'));
-      console.log("secretKeyModal",secretKeyModal)
+      //console.log("secretKeyModal",secretKeyModal)
       if (secretKeyModal) {
         secretKeyModal.hide();
       } else {
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener for confirm button
     confirmBtn.addEventListener('click', function() {
         if (currentConnectionId) {
-            console.log('Confirm delete clicked for connection ID:', currentConnectionId); // Log the connection ID
+            //console.log('Confirm delete clicked for connection ID:', currentConnectionId); // Log the connection ID
             const deledata = {connectionid: currentConnectionId, type : currentConnectiontype};
             fetch(`/connections/${currentConnectionId}`, {
                 method: 'DELETE',
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Connection deleted successfully:', data); // Log success message
+                    //console.log('Connection deleted successfully:', data); // Log success message
                     // Remove the card from the DOM
                     const card = document.getElementById(`card-${currentConnectionId}`);
                     if (card) {
@@ -216,14 +216,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // files chat button
     const filechatButtons = document.querySelectorAll('.btn.btn-inverse-dark.btn-fw.files-btn');
-    console.log("filechatButtons",filechatButtons); 
+    //console.log("filechatButtons",filechatButtons); 
 
     filechatButtons.forEach(button => {
         button.addEventListener("click", function(){
-          console.log("Chat button clicked!");
+          //console.log("Chat button clicked!");
           const chatId = button.getAttribute("data-connection-id");
           const savedStatus = sessionStorage.getItem(`conn_status_${chatId}`);
-          console.log("connectButton",chatId,savedStatus);
+          //console.log("connectButton",chatId,savedStatus);
           window.location.href =  `/rb/chat/${chatId}`;
           //
         });
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //chat button
     const chatButtons = document.querySelectorAll('.btn.btn-inverse-dark.btn-fw.chat-btn');
-    console.log(chatButtons); 
+    //console.log(chatButtons); 
 
     chatButtons.forEach(button => {
         button.addEventListener("click", function(){
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const connectionId = this.getAttribute('data-connection-id');
         const status = this.getAttribute('data-status');
         const label = document.getElementById(`label-${connectionId}`);
-        console.log(label,connectionId)
+        //console.log(label,connectionId)
         const colorname = label.getAttribute('data-name');
 
         if (!status) {
@@ -358,10 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
         event.stopPropagation(); // Prevent any parent event handlers from being triggered
         const connectionId = this.getAttribute('data-connection-id');
         const contype = this.getAttribute('data-connections-type');
-        console.log('Get secret label clicked with connection ID:', connectionId); // Log the connection ID
+        //console.log('Get secret label clicked with connection ID:', connectionId); // Log the connection ID
         const user_id = localStorage.getItem("user_id")
         const secretdata = {user_id: user_id,db_id:connectionId, contype:contype};
-        console.log(secretdata)
+        //console.log(secretdata)
         // Make a GET request to fetch the secret key
         fetch(`/get_secret`, {
           method: 'POST',
@@ -386,11 +386,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
 
-    console.log("closesecret",closesecret)
+    //console.log("closesecret",closesecret)
     closesecret.addEventListener('click', function() {
-      console.log("secretKeyModal close called")
+      //console.log("secretKeyModal close called")
       const secretKeyModal = bootstrap.Modal.getInstance(document.getElementById('secret-key-modal'));
-      console.log("secretKeyModal",secretKeyModal)
+      //console.log("secretKeyModal",secretKeyModal)
       if (secretKeyModal) {
         secretKeyModal.hide();
       } else {

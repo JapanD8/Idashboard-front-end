@@ -99,7 +99,7 @@ def register():
             return jsonify({"message": "User already exists"}), 409
 
         hashed_pw = generate_password_hash(password)
-        new_user = User(email=email, password=hashed_pw, role="user")
+        new_user = User(email=email, password=hashed_pw )#role="user"
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "Registered successfully"}), 200
@@ -148,13 +148,13 @@ def dashboard():
     if current_user.is_authenticated:
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
-        print("current_user.role",current_user.role)
+        #print("current_user.role",current_user.role)
 
         #folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
-        if current_user.role == "admin":
-            is_admin = True
-        else:
-            is_admin = False
+        # if current_user.role == "admin":
+        #     is_admin = True
+        # else:
+        is_admin = False
         for conn in connections:
             conn.type = 'connection'
             
@@ -178,10 +178,10 @@ def databases():
         connections = Connection.query.filter_by(user_id=current_user.id).all()
         print(connections)
         #folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
-        if current_user.role == "admin":
-            is_admin = True
-        else:
-            is_admin = False
+        # if current_user.role == "admin":
+        #     is_admin = True
+        # else:
+        is_admin = False
 
         for conn in connections:
             conn.type = 'connection'
