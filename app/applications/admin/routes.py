@@ -1,6 +1,6 @@
 # app/routes.py
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify, session, render_template_string, current_app
-from app.models import User, Connection, ChatSession, Message,ChartData, AccesstokenData, UserFolder
+from app.models import User, Connection, ChatSession, Message,ChartData, AccesstokenData, UserFolder, SharedConnection, SharedFolder
 from app.models import db 
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -231,3 +231,79 @@ def get_folders():
             }
         ]
     return jsonify({"message": "Registered successfully", "data":folder_list}), 200
+
+
+@admin.route('/api/share', methods=["PUT"])
+def share_conn_and_fol():
+    try: 
+        data = request.get_json()
+        print("share connection data",data)
+        #SharedConnection, SharedFolder
+        connections  = []
+        agents = []
+        to_user = data.get("user_id")
+        resources = data.get("resource_ids")
+        for resource in resources:
+            id= resource
+            if resource.get("type")=="connection":
+                connections.append(resource.get("id"))
+            if resource.get("type")=="agent":
+                agents.append(resource.get("id"))
+
+        folders_details = UserFolder.query.filter(UserFolder.id.in_(agents)).all()
+        connections_details = Connection.query.filter(Connection.id.in_(connections)).all()
+        folder_insert_values = []
+        conn_insert_values = []
+        c_user = current_user.id
+        
+        
+
+
+        for folder in folders_details:
+            folder_insert_values.append({
+            'name': folder.name,
+            'shared_by': current_user.email,
+            'user_id': to_user,
+            "admin_id" : current_user.id,
+            'created_at': datetime.now(),
+            'total_files': folder.total_files,
+            'file_types_json': folder.file_types_json,
+            'status': 'active',
+            'folder_location': f"uploads/user_{c_user}/folder_{folder.id}",
+            'created_at': datetime.now()
+          })
+
+        db.session.bulk_insert_mappings(SharedFolder, folder_insert_values)
+        db.session.commit() 
+
+        for conn in connections_details:
+            conn_insert_values.append({
+            'name': conn.name,
+            'shared_by': current_user.email,
+            'user_id': to_user,
+            "admin_id" : current_user.id,
+            'host':conn.host,
+            'database':conn.database,
+            'db_user': conn.db_user,
+            'password':conn.password,
+            'port':conn.port,
+            'db_system':conn.db_system,
+            'status': 'active',
+            'created_at': datetime.now()
+          })
+        db.session.bulk_insert_mappings(SharedConnection, conn_insert_values)
+        db.session.commit() 
+
+        ## SharedFolder
+        ## name,shared_by,user_id ,created_at ,total_files ,file_types_json, status ,folder_location 
+
+        ## SharedConnection
+        ## user_id ,name ,shared_by ,host ,database ,db_user ,password, port ,created_at ,db_system, status
+        print("folder_insert_values",folder_insert_values)
+        print("conn_insert_values",conn_insert_values)
+        db.session.close()
+
+        return jsonify({"message": "Registered successfully", "data":{}}), 200
+    except Exception as e:
+        print("error", e)
+        return jsonify({'success': False, 'error': 'server error'}), 404

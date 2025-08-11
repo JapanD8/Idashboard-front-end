@@ -126,3 +126,37 @@ class RagMessage(db.Model):
     sender = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     db_id = db.Column(db.Integer, db.ForeignKey('user_folder.id', ondelete="CASCADE"), index=True, nullable=True)
+
+
+# admin shared info
+
+class SharedConnection(db.Model):
+    __tablename__ = "shared_db_connections"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    admin_id = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    shared_by = db.Column(db.String(100), nullable=False)
+    host = db.Column(db.String(100), nullable=False)
+    database = db.Column(db.String(100), nullable=False)
+    db_user = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    port = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    db_system = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(50), default='inactive')
+
+
+
+class SharedFolder(db.Model):
+    __tablename__ = "admin_shared_folder"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    shared_by = db.Column(db.String(100), )
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    admin_id = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    total_files = db.Column(db.Integer, default=0)
+    file_types_json = db.Column(db.Text, default='[]')
+    status = db.Column(db.String(50), default='inactive')
+    folder_location = db.Column(db.String(255), nullable=False)

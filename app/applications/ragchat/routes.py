@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, jsonify, session, render_template_string, current_app
-from app.models import User, Connection, ChatSession, Message,ChartData, AccesstokenData, UserFolder, Files, RagMessage
+from app.models import User, Connection, ChatSession, Message,ChartData, AccesstokenData, UserFolder, Files, RagMessage, SharedFolder
 from app.models import db 
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.utils import secure_filename
@@ -446,8 +446,16 @@ def get_assitant():
 def get_topics():
 
     if current_user.is_authenticated:
-        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()  
+        folder_list = UserFolder.query.filter_by(user_id=current_user.id, status='active').all()
+        shared_folders = []
         folders=[]
+        if current_user.role == "admin":
+            is_admin = True
+        else:
+            is_admin = False
+            shared_folders = SharedFolder.query.filter_by(user_id=current_user.id, status='active').all()
+        
+
         # folders = [
         #             {
         #                 'id': folder.id,
@@ -463,8 +471,6 @@ def get_topics():
         #         ]
         count=0
         for folder in folder_list:
-            count+=1
-           
             name=folder.name
             file_ ={
                         'id': folder.id,
@@ -474,10 +480,29 @@ def get_topics():
                         'total_files': folder.total_files,
                         'file_types': json.loads(folder.file_types_json),
                         'type': 'folder',
+                        'folder_type': 'user',
                         'agent': 'dock',
                         'description': 'Doc Management'
                     }
             folders.append(file_)
+
+        for fol in shared_folders:
+            name=fol.name
+            file_ ={
+                        'id': fol.user_id,
+                        'name': name,
+                        'user_id': fol.user_id,
+                        'created_at': fol.created_at,
+                        'total_files': fol.total_files,
+                        'file_types': json.loads(fol.file_types_json),
+                        'type': 'folder',
+                        'folder_type': 'shared',
+                        'agent': 'dock',
+                        'description': 'Doc Management'
+                    }
+            folders.append(file_)
+
+
 
         # Merge and sort by created_at
         # combined = list(chain(connections, folder_list))

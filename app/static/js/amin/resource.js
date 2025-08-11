@@ -350,6 +350,101 @@ function updateSelectedCount() {
 }
 
 
+function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+
+// Share resources with selected user
+// async function shareResources() {
+//     const selectedUser = document.getElementById('userSelect').value;
+//     const resourceIds = Array.from(selectedResources);
+    
+//     if (!selectedUser || resourceIds.length === 0) {
+//         showNotification('Please select a user and at least one resource', 'error');
+//         return;
+//     }
+
+//     // Show loading state
+//     const shareBtn = document.getElementById('shareBtn');
+//     const originalText = shareBtn.textContent;
+//     shareBtn.textContent = 'Sharing...';
+//     shareBtn.disabled = true;
+//     document.body.classList.add('loading');
+//     console.log("selectedUser",selectedUser)
+//     console.log("resourceIds",resourceIds)
+
+//     try {
+//         // Simulate API call
+//         const response = await simulateAPICall('/api/share', {
+//             method: 'POST',
+//             body: JSON.stringify({
+//                 user_id: selectedUser,
+//                 resource_ids: resourceIds,
+//                 shared_by: 'admin'
+//             })
+//         });
+
+//         if (response.success) {
+//             // Update local data
+//             resourceIds.forEach(resourceId => {
+//                 const resource = allResources.find(r => r.id === resourceId);
+//                 if (resource && !resource.shared_with.includes(selectedUser)) {
+//                     resource.shared_with.push(selectedUser);
+//                 }
+//             });
+
+//             // Reset form
+//             selectedResources.clear();
+//             document.getElementById('userSelect').value = '';
+//             document.getElementById('selectedResources').value = '';
+            
+//             // Clear all selections
+//             document.querySelectorAll('.resource-item').forEach(item => {
+//                 item.classList.remove('selected');
+//             });
+//             document.querySelectorAll('.checkbox').forEach(checkbox => {
+//                 checkbox.checked = false;
+//             });
+            
+//             updateSelectedCount();
+//             updateShareButton();
+            
+//             const userName = users.find(u => u.id === selectedUser)?.name || selectedUser;
+//             showNotification(`Successfully shared ${resourceIds.length} resource(s) with ${userName}`, 'success');
+//         } else {
+//             throw new Error(response.message || 'Sharing failed');
+//         }
+//     } catch (error) {
+//         console.error('Error sharing resources:', error);
+//         showNotification('Failed to share resources. Please try again.', 'error');
+//     } finally {
+//         // Reset loading state
+//         shareBtn.textContent = originalText;
+//         shareBtn.disabled = false;
+//         document.body.classList.remove('loading');
+//         updateShareButton();
+//     }
+// }
 
 // Share resources with selected user
 async function shareResources() {
@@ -367,29 +462,46 @@ async function shareResources() {
     shareBtn.textContent = 'Sharing...';
     shareBtn.disabled = true;
     document.body.classList.add('loading');
+    console.log("selectedUser",selectedUser)
+    console.log("resourceIds",resourceIds)
 
     try {
-        // Simulate API call
-        const response = await simulateAPICall('/api/share', {
-            method: 'POST',
+        const response = await fetch('/admin/api/share', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 user_id: selectedUser,
-                resource_ids: resourceIds,
-                shared_by: 'admin'
+                resource_ids: resourceIds.map(resource => {
+                    const [type, id] = resource.split('_');
+                    return { type, id };
+                })
             })
         });
 
-        if (response.success) {
+        if (response.ok) {
+            const data = await response.json();
             // Update local data
             resourceIds.forEach(resourceId => {
-                const resource = allResources.find(r => r.id === resourceId);
-                if (resource && !resource.shared_with.includes(selectedUser)) {
-                    resource.shared_with.push(selectedUser);
+                const [type, id] = resourceId.split('_');
+                if (type === 'connection') {
+                    const resource = connectionResources.find(r => r.id === id);
+                    if (resource && !resource.shared_with.includes(selectedUser)) {
+                        resource.shared_with.push(selectedUser);
+                    }
+                } else {
+                    const resource = agentResources.find(r => r.id === id);
+                    if (resource && !resource.shared_with.includes(selectedUser)) {
+                        resource.shared_with.push(selectedUser);
+                    }
                 }
             });
 
             // Reset form
             selectedResources.clear();
+            selectedConnections.clear();
+            selectedAgents.clear();
             document.getElementById('userSelect').value = '';
             document.getElementById('selectedResources').value = '';
             
@@ -407,7 +519,7 @@ async function shareResources() {
             const userName = users.find(u => u.id === selectedUser)?.name || selectedUser;
             showNotification(`Successfully shared ${resourceIds.length} resource(s) with ${userName}`, 'success');
         } else {
-            throw new Error(response.message || 'Sharing failed');
+            throw new Error('Sharing failed');
         }
     } catch (error) {
         console.error('Error sharing resources:', error);
@@ -421,3 +533,8 @@ async function shareResources() {
     }
 }
 setupEventListeners();
+
+window.addEventListener('load', function() {
+    clearConnectionSelections();
+    clearAgentSelections(); // If you have a similar function for agents
+});

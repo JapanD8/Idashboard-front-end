@@ -157,26 +157,26 @@ async function renderTopics() {
     }
 
     container.innerHTML = filteredTopics.map(topic => `
-        <div class="topic-card" id="label-${topic.id}">
-            <div class="topic-header">
-                <div class="topic-status"></div>
-                <div class="topic-title">${topic.name}</div>
-            </div>
-            <div class="topic-actions">
-                <button class="action-btn" data-connection-id="${topic.id}" onclick="editTopic(${topic.id})">✏️</button>
-                <button class="action-btn" data-connection-id="${topic.id}" onclick="deleteTopic(${topic.id})">🗑️</button>
-            </div>
-            <div class="topic-description">${topic.description}</div>
-            <div class="topic-meta">Created: ${formatDate(topic.created_at)}</div>
-            <div class="topic-buttons">
-                <button class="btn btn-chat" data-connection-id="${topic.id}">Chat</button>
-               
-               
-            </button>
-            </div>
+    <div class="topic-card" id="label-${topic.id}">
+        <div class="topic-header">
+            <div class="topic-status"></div>
+            <div class="topic-title">${topic.name}</div>
         </div>
+        <div class="topic-actions">
+            <button class="action-btn" data-connection-id="${topic.id}" onclick="editTopic(${topic.id})">✏️</button>
+            <button class="action-btn" data-connection-id="${topic.id}" onclick="deleteTopic(${topic.id})">🗑️</button>
+        </div>
+        <div class="topic-description">${topic.description}</div>
+        <div class="topic-meta">
+            <div>Created: ${formatDate(topic.created_at)}</div>
+            ${topic.folder_type === 'shared' ? `<div>Shared by: <span style="color: rgb(16, 97, 173);">Admin</span></div>` : ''}
+        </div>
+        <div class="topic-buttons">
+            <button class="btn btn-chat" data-connection-id="${topic.id}">Chat</button>
+        </div>
+    </div>
     `).join('');
-    
+    //${topic.folder_type === 'shared' ? `<br>Shared by: <span style="color: blue;">admin</span>` : ''}
     //<button class="btn btn-secret" data-connection-id="${topic.id}">Get Secret</button>
     //<button class="btn btn-collaborators" data-connection-id="${topic.id}" onclick="showCollaborators(${topic.id})">
     //            👥 ${topic.collaborators ? topic.collaborators.length : 0}

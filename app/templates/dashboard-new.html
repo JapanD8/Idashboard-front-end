@@ -191,7 +191,9 @@
                         <h4 class="card-title mb-2 mt-2 db-subtitle">{{ connection.database }}</h4>
                         <small class="text-muted">{{ connection.host }}</small><br>
                         <small class="text-muted">Created: {{ connection.created_at.strftime('%b %d, %Y') }}</small><br>
-              
+                        {% if connection.type == 'shared' %}
+                            <small class="text-muted">Shared by: <span style="color: rgb(16, 97, 173);">Admin</span></small><br>
+                        {% endif %}
                         <div class="d-flex align-items-center justify-content-between mt-3">
                        
                            
