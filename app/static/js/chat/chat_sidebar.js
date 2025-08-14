@@ -65,6 +65,7 @@ const path = window.location.pathname;
 const chatId = path.split('/').pop();
 console.log("chatId",chatId)
 localStorage.setItem('chatId', chatId)
+const connectionType = sessionStorage.getItem(chatId);
 let mockData;
  
 const navigationEntries = performance.getEntriesByType("navigation");
@@ -74,11 +75,11 @@ if (navigationEntries.length > 0 && navigationEntries[0].type === "reload") {
   console.log("Page Loaded (Not Reloaded)");
 }
 
-fetchSchemaById(chatId);
+fetchSchemaById(chatId,connectionType);
 
 
-function fetchSchemaById(id) {
-    fetch(`/connections/${id}/schema`)
+function fetchSchemaById(id, type) {
+    fetch(`/connections/${id}/${type}/schema`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {

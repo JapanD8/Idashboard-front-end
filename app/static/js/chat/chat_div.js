@@ -279,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatInput.value = '';
         const storedData = sessionStorage.getItem('mockdata-'+dbId);
         const schemadata = JSON.parse(storedData);
+        const connectionType = sessionStorage.getItem(dbId);
         
 
         // Create a new message element for the user's message
@@ -303,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/chat_ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId, message: message, schema_data: schemadata , dbId:dbId})
+            body: JSON.stringify({ session_id: sessionId, message: message, schema_data: schemadata , dbId:dbId, ctype: connectionType})
         })
         .then(response => response.json())
         .then(data => {

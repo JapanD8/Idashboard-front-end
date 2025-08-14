@@ -161,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("chatInput-message",message)
         chatInput.value = '';
         const storedData = sessionStorage.getItem('mockdata-'+dbId);
+        const connectionType = sessionStorage.getItem(dbId);
+        const connectionTypeid = sessionStorage.getItem(connectionType+"_"+chatId);
         const schemadata = JSON.parse(storedData);
 
         const listItem = document.createElement('li');
@@ -188,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/rb/chat_ai', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId, message: message, dbId:dbId, fileIds: selectedSids})
+            body: JSON.stringify({ session_id: sessionId, message: message, dbId:dbId, fileIds: selectedSids, ctype: connectionType, typeid:connectionTypeid})
         })
         .then(response => response.json())
         .then(data => {

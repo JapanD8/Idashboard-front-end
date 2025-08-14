@@ -293,8 +293,10 @@ def chat_ai_rag():
         string_list= request.json['fileIds']
         file_ids = [int(x) for x in string_list]
         dbId = request.json['dbId']
+        ctype = request.json['ctype']
+        ctype_id = request.json['typeid']
         #file_ids =  [51,52]
-        print( "active_connections",session_id,usermessage,dbId, file_ids)
+        print( "active_connections",session_id,usermessage,dbId, file_ids,ctype, ctype_id)
         ###Insert user message
         try:
             connection = RagMessage(
@@ -326,7 +328,7 @@ def chat_ai_rag():
         logger.debug(f"DEBUG: Starting document search...")
         search_results = search_documents(
             query=usermessage,
-            user_id=current_user.id,
+            user_id=ctype_id,
             file_ids=file_ids,
             top_k=5
         )
@@ -489,7 +491,7 @@ def get_topics():
         for fol in shared_folders:
             name=fol.name
             file_ ={
-                        'id': fol.user_id,
+                        'id': fol.folder_id,
                         'name': name,
                         'user_id': fol.user_id,
                         'created_at': fol.created_at,
@@ -497,6 +499,7 @@ def get_topics():
                         'file_types': json.loads(fol.file_types_json),
                         'type': 'folder',
                         'folder_type': 'shared',
+                        'folder_id':fol.admin_id ,#folder_type
                         'agent': 'dock',
                         'description': 'Doc Management'
                     }

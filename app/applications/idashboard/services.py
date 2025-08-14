@@ -1,5 +1,5 @@
 from google import genai
-from app.models import User, Connection, ChatSession, Message, AccesstokenData
+from app.models import User, Connection, ChatSession, Message, AccesstokenData, SharedConnection
 import mysql.connector
 import pandas as pd
 import json
@@ -66,9 +66,14 @@ def validate_access_token(token):
 def generate_unique_embed_id():
     return str(uuid.uuid4())[:8]
 
-def re_get_connection(connection_id, user_id):
+def re_get_connection(connection_id, user_id, type="connection"):
     active_connections = {}
-    connection = Connection.query.filter_by(id=connection_id, user_id=user_id).first()
+    
+    #sconnection = Connection.query.filter_by(id=connection_id, user_id=user_id).first()
+    if type=="connection":
+        connection = Connection.query.filter_by(id=connection_id, user_id=user_id).first()
+    if type=="shared":
+        connection = SharedConnection.query.filter_by(connection_id=connection_id, user_id=user_id).first()
     
     if not connection:
          return {}, connection_id, "cannnot connect to db"
@@ -107,11 +112,11 @@ def re_get_connection(connection_id, user_id):
     
 
 
-def get_processed_data(schmea, user_question,user_id,connection_id):
+def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
     active_connections = {}
     print(len(active_connections))
     if  len(active_connections)==0:
-        active_connections, db_name, db_system = re_get_connection(connection_id, user_id)
+        active_connections, db_name, db_system = re_get_connection(connection_id, user_id, type=ctype)
 
     load_dotenv()
     gemini_key = os.getenv("GEMINI_Key")
@@ -122,7 +127,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id):
         return 404, {}
     
 
-    print("user_id, connection_id",user_id, connection_id)
+    print("user_id, connection_id",user_id, connection_id, ctype)
     print(schmea)
     conn = active_connections[(user_id, connection_id)]
     cursor = conn.cursor()

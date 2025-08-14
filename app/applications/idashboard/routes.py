@@ -21,9 +21,11 @@ import random
 from itertools import chain
 import jwt
 import os 
+
 active_connections = {}
 
 main = Blueprint('main', __name__)
+
 
 def authenticate(f):
     @wraps(f)
@@ -164,6 +166,7 @@ def dashboard():
             
         for folder in folder_list:
             folder.type = 'shared'
+            folder.id = folder.connection_id
             
 
         # Merge and sort by created_at
@@ -195,6 +198,8 @@ def databases():
             
         for folder in folder_list:
             folder.type = 'shared'
+            print("folder.id = folder.connection_id",folder.id , folder.connection_id)
+            folder.id = folder.connection_id
             
 
         # Merge and sort by created_at
@@ -271,7 +276,7 @@ def get_connections():
 
 @main.route('/connections/<int:connection_id>', methods=['DELETE'])
 @login_required
-def delete_connection(connection_id):
+def delete_connection(connection_id,type):
     connection_id = request.json['connectionid']
     connection_type = request.json['type']
     print("connection_id, connection_type",connection_id, connection_type)
@@ -290,10 +295,14 @@ def delete_connection(connection_id):
     
 
 
-@main.route('/connections/<int:connection_id>/post', methods=['POST'])
+@main.route('/connections/<int:connection_id>/<string:type>/post', methods=['POST'])
 @login_required
-def connect_connection(connection_id):
-    connection = Connection.query.filter_by(id=connection_id, user_id=current_user.id).first()
+def connect_connection(connection_id, type):
+    print("conenctionid and shared type",connection_id, type)
+    if type=="connection":
+        connection = Connection.query.filter_by(id=connection_id, user_id=current_user.id).first()
+    if type=="shared":
+        connection = SharedConnection.query.filter_by(connection_id=connection_id, user_id=current_user.id).first()
     if not connection:
         return jsonify({'success': False, 'error': 'Connection not found'}), 404
 
@@ -385,9 +394,9 @@ def update_connection(connection_id):
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
     
-@main.route('/connections/<int:connection_id>/delete', methods=['DELETE'])
+@main.route('/connections/<int:connection_id>/<string:type>/delete', methods=['DELETE'])
 @login_required
-def disconnect_connection(connection_id):
+def disconnect_connection(connection_id, type):
     try:
         # Retrieve the established connection object from the session
         
@@ -412,14 +421,14 @@ def disconnect_connection(connection_id):
 
 ######## ----chat page routings------
 
-@main.route('/connections/<int:connection_id>/schema', methods=['GET'])
+@main.route('/connections/<int:connection_id>/<string:type>/schema', methods=['GET'])
 @login_required
-def get_schema(connection_id):
+def get_schema(connection_id, type):
     active_connections = {}
     db_system =""
     if len(active_connections)==0:
         print("Before active_connections length",len(active_connections))
-        active_connections, db_name, db_system = re_get_connection(connection_id, current_user.id)
+        active_connections, db_name, db_system = re_get_connection(connection_id, current_user.id, type=type)
     print("After",len(active_connections), db_name)
     if (current_user.id, connection_id) not in active_connections:
         return jsonify({'success': False, 'error': 'Connection not found'}), 404
@@ -569,6 +578,7 @@ def chat_ai():
         session_id = request.json['session_id']
         usermessage = request.json['message']
         schema_data = request.json['schema_data']
+        ctype = request.json['ctype']
         dbId = request.json['dbId']
         print( "active_connections",session_id,usermessage)
         print("active_connections",len(active_connections))
@@ -583,7 +593,7 @@ def chat_ai():
             db.session.commit()
         except Exception as e:
             print(e)
-        result, ai_data = get_processed_data(schema_data,usermessage, current_user.id, dbId)
+        result, ai_data = get_processed_data(schema_data,usermessage, current_user.id, dbId, ctype)
         print("result,ai_data",result,ai_data)
 
         chart_descriptions = [

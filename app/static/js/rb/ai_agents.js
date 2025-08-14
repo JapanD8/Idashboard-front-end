@@ -172,7 +172,7 @@ async function renderTopics() {
             ${topic.folder_type === 'shared' ? `<div>Shared by: <span style="color: rgb(16, 97, 173);">Admin</span></div>` : ''}
         </div>
         <div class="topic-buttons">
-            <button class="btn btn-chat" data-connection-id="${topic.id}">Chat</button>
+            <button class="btn btn-chat" data-connection-id="${topic.id}" data-connections-type="${topic.folder_type}" data-connections-typeid="${topic.folder_id}">Chat</button>
         </div>
     </div>
     `).join('');
@@ -188,6 +188,10 @@ async function renderTopics() {
             const chatId = button.getAttribute("data-connection-id");
             const savedStatus = sessionStorage.getItem(`conn_status_${chatId}`);
             console.log("connectButton", chatId, savedStatus);
+            const ctype = this.getAttribute("data-connections-type");
+            sessionStorage.setItem(chatId, ctype);
+            const ctype_id = this.getAttribute("data-connections-typeid");
+            sessionStorage.setItem( ctype+"_"+chatId, ctype_id);
             window.location.href = `/rb/chat/${chatId}`;
         });
     });

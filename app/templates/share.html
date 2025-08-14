@@ -197,12 +197,10 @@
                     Share Resources with Users
                 </h2>
                 
-                <div class="form-row">
+               <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Select User</label>
-                        <select class="form-select" id="userSelect">
-                            <option value="">Choose a user...</option>
-                            
+                        <select class="form-select" id="userSelect" onchange="updateResourceSelections()">
                         </select>
                     </div>
                     
@@ -214,6 +212,12 @@
                     <div class="form-group">
                         <button class="share-btn" onclick="shareResources()" id="shareBtn" disabled>
                             Share
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="remove-btn" onclick="removeResources()" id="removeBtn" disabled>
+                            Remove
                         </button>
                     </div>
                 </div>

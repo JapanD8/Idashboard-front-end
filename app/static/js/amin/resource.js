@@ -7,6 +7,7 @@ let selectedAgents = new Set();
 let currentView = 'admin';
 let currentUserView = 'john.doe';
 let selectedResources = new Set();
+let userPermissions = {};
 console.log("file loaded")
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -16,12 +17,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Update share button state
-function updateShareButton() {
-    const userSelected = document.getElementById('userSelect').value;
-    const resourcesSelected = selectedResources.size > 0;
-    const shareBtn = document.getElementById('shareBtn');
+// function updateShareButton() {
+//     const userSelected = document.getElementById('userSelect').value;
+//     const resourcesSelected = selectedResources.size > 0;
+//     const shareBtn = document.getElementById('shareBtn');
     
-    shareBtn.disabled = !userSelected || !resourcesSelected;
+//     shareBtn.disabled = !userSelected || !resourcesSelected;
+// }
+
+function updateShareButton() {
+  const userSelected = document.getElementById('userSelect').value;
+  const resourcesSelected = selectedConnections.size > 0 || selectedAgents.size > 0;
+  const shareBtn = document.getElementById('shareBtn');
+  
+  shareBtn.disabled = !userSelected || !resourcesSelected;
 }
 
 // Format date
@@ -38,30 +47,133 @@ function setupEventListeners() {
   document.getElementById('userSelect').addEventListener('change', updateShareButton);
 }
 
-// Fetch users
-async function fetchUsers() {
-  try {
-    const response = await fetch('/admin/api/users');
-    const data = await response.json();
-    users = data.data;
-    console.log("users",users)
-    const userSelect = document.getElementById('userSelect');
+// Fetch users working-code
+// async function fetchUsers() {
+//   try {
+//     const response = await fetch('/admin/api/users');
+//     const data = await response.json();
+//     users = data.data;
+//     console.log("users",users)
+//     const userSelect = document.getElementById('userSelect');
 
-    // Clear existing options
-    userSelect.innerHTML = '<option value="">Choose a user...</option>';
+//     // Clear existing options
+//     userSelect.innerHTML = '<option value="">Choose a user...</option>';
     
-    // Add new options
-    users.forEach(user => {
+//     // Add new options
+//     users.forEach(user => {
        
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = `${user.email}`;
-        userSelect.appendChild(option);
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
+//         const option = document.createElement('option');
+//         option.value = user.id;
+//         option.textContent = `${user.email}`;
+//         userSelect.appendChild(option);
+//     });
+//   } catch (error) {
+//     console.error('Error fetching users:', error);
+//   }
+// }
+
+//--fetch user ------------------------------------------------
+
+async function fetchUsers() {
+    try {
+        const response = await fetch('/admin/api/users');
+        const data = await response.json();
+        users = data.data;
+        console.log("user permission", users)
+        userPermissions = {};
+
+        users.forEach(user => {
+            userPermissions[user.id] = user.permissions || [];
+        });
+
+        const userSelect = document.getElementById('userSelect');
+
+        // Clear existing options
+        userSelect.innerHTML = '<option value="">Choose a user...</option>';
+
+        // Add new options
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = `${user.email}`;
+            userSelect.appendChild(option);
+        });
+
+        // Add event listener to user select
+        // userSelect.addEventListener('change', function() {
+        // updateResourceSelections();
+        // });
+    } 
+    catch (error) {
+        console.error('Error fetching users:', error);
+    }
 }
+
+function updateResourceSelections() {
+    const selectedUserId = document.getElementById('userSelect').value;
+    if (!selectedUserId) {
+    // Reset all checkboxes and selections when no user is selected
+    connectionResources.forEach(resource => {
+        document.getElementById(`check_conn_${resource.id}`).checked = false;
+        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+    });
+    agentResources.forEach(resource => {
+        document.getElementById(`check_agent_${resource.id}`).checked = false;
+        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+    });
+    selectedConnections.clear();
+    selectedAgents.clear();
+    updateSelectedCount();
+    return;
+    }
+
+    const permissions = userPermissions[selectedUserId];
+    selectedConnections.clear();
+    selectedAgents.clear();
+
+    permissions.forEach(permission => {
+    if (connectionResources.find(resource => `connection_${resource.id}` === permission)) {
+        const resourceId = connectionResources.find(resource => `connection_${resource.id}` === permission).id;
+        selectedConnections.add(resourceId);
+        document.getElementById(`check_conn_${resourceId}`).checked = true;
+        document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+    } else if (agentResources.find(resource => `agent_${resource.id}` === permission)) {
+        const resourceId = agentResources.find(resource => `agent_${resource.id}` === permission).id;
+        selectedAgents.add(resourceId);
+        document.getElementById(`check_agent_${resourceId}`).checked = true;
+        document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+    }
+    });
+
+    // Uncheck resources that are not in permissions
+    connectionResources.forEach(resource => {
+    if (!permissions.includes(`connection_${resource.id}`)) {
+        document.getElementById(`check_conn_${resource.id}`).checked = false;
+        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+        if (selectedConnections.has(resource.id)) {
+        selectedConnections.delete(resource.id);
+        }
+    }
+    });
+
+    agentResources.forEach(resource => {
+    if (!permissions.includes(`agent_${resource.id}`)) {
+        document.getElementById(`check_agent_${resource.id}`).checked = false;
+        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+        if (selectedAgents.has(resource.id)) {
+        selectedAgents.delete(resource.id);
+        }
+    }
+    });
+
+    updateSelectedCount();
+    updateShareButton();
+  //updateRemoveButton();
+}
+
+//--fetch user ------------------------------------------------
+
+
 
 // Fetch connection resources
 async function fetchConnectionResources() {
@@ -347,6 +459,8 @@ function updateSelectedCount() {
     });
     
     document.getElementById('selectedResources').value = selectedNames.join(', ');
+    const removeBtn = document.getElementById('removeBtn');
+    removeBtn.disabled = selectedConnections.size === 0 && selectedAgents.size === 0;
 }
 
 
@@ -373,6 +487,51 @@ function showNotification(message, type = 'success') {
             }, 3000);
         }
 
+async function removeResources() {
+    const selectedUser = document.getElementById('userSelect').value;
+    
+    if (!selectedUser) {
+        showNotification('Please select a user', 'error');
+        return;
+    }
+
+    const resourceIds = [...selectedConnections, ...selectedAgents];
+    
+    if (resourceIds.length === 0) {
+        showNotification('Please select at least one resource', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/remove-resources', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: selectedUser,
+                resource_ids: resourceIds
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Resources removed successfully');
+            // Update local data and UI
+            selectedConnections.clear();
+            selectedAgents.clear();
+            updateSelectedCount();
+            renderConnectionResources();
+            renderAgentResources();
+        } else {
+            showNotification(data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error removing resources:', error);
+        showNotification('Failed to remove resources', 'error');
+    }
+}
 
 // Share resources with selected user
 // async function shareResources() {

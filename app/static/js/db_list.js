@@ -285,6 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const connectionId = this.getAttribute('data-connection-id');
         const status = this.getAttribute('data-status');
         const label = document.getElementById(`label-${connectionId}`);
+        const ctype = this.getAttribute("data-connections-type");
+        sessionStorage.setItem(connectionId, ctype);
         console.log(label,connectionId)
         const colorname = label.getAttribute('data-name');
 
@@ -294,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const method = status === 'connected' ? 'DELETE' : 'POST';
-        const url = `/connections/${connectionId}/${method === 'POST' ? 'post' : 'delete'}`;
+        const url = `/connections/${connectionId}/${ctype}/${method === 'POST' ? 'post' : 'delete'}`;
 
         function capitalize(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);

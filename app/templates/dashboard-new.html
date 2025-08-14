@@ -201,13 +201,13 @@
                                   class="btn btn-fw connect-btn pushme2 
                                         {% if connection.status == 'connected' %}btn-connected btn-inverse-danger{% else %}btn-disconnected btn-inverse-success{% endif %}"
                                   data-connection-id="{{ connection.id }}" 
-                                  data-status="{% if connection.status == 'connected' %}connected{% else %}disconnected{% endif %}">
+                                  data-status="{% if connection.status == 'connected' %}connected{% else %}disconnected{% endif %}" data-connections-type="{{connection.type}}">
                               {% if connection.status == 'connected' %}Disconnect{% else %}Connect{% endif %}
                           </button><br>
               
                           <button type="button"
                                   class="btn btn-inverse-dark btn-fw chat-btn"
-                                  data-connection-id="{{ connection.id }}">
+                                  data-connection-id="{{ connection.id }}" data-connections-type="{{connection.type}}">
                             Chat
                           </button><br>
               

@@ -20,17 +20,17 @@
 }
 
 .form-row {
-    display: grid;
-    grid-template-columns: 1fr 2fr 150px;
-    gap: 1.5rem;
-    align-items: end;
-    margin-bottom: 2rem;
-}
+            display: grid;
+            grid-template-columns: 1fr 2fr auto auto;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 2rem;
+        }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-}
+            display: flex;
+            flex-direction: column;
+        }
 
 .form-label {
     margin-bottom: 0.5rem;
@@ -54,27 +54,42 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.share-btn {
-    background: #3b82f6;
-    color: white;
+.share-btn, .remove-btn {
     border: none;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1rem;
     border-radius: 6px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.875rem;
     height: fit-content;
+    min-width: 100px;
+    white-space: nowrap;
 }
 
-.share-btn:hover {
+.share-btn {
+    background: #3b82f6;
+    color: white;
+}
+
+.share-btn:hover:not(:disabled) {
     background: #2563eb;
 }
 
-.share-btn:disabled {
+.remove-btn {
+    background: #ef4444;
+    color: white;
+}
+
+.remove-btn:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+.share-btn:disabled, .remove-btn:disabled {
     background: #9ca3af;
     cursor: not-allowed;
 }
+
 
 /* Resources Grid */
 .resources-section {

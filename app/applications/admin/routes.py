@@ -63,12 +63,50 @@ def get_users():
 
     users = User.query.filter_by(role='user').all()
     user_list = []
+    user_id_list = []
     for user in users:
         user_list.append({
             "id" :user.id,
             "email" : user.email
         })
-    print("user_list", user_list)
+        user_id_list.append(user.id)
+
+    
+    print("user_list", user_list, user_id_list)
+
+
+
+    #users_connection_list = SharedConnection.query.filter_by(user_id=current_user.id, status='active').all()
+    #users_shared_folders = SharedFolder.query.filter_by(user_id=current_user.id, status='active').all()
+    users_connection_list = SharedConnection.query.filter(SharedConnection.user_id.in_(user_id_list),SharedConnection.status == 'active').all()
+    users_shared_folders = SharedFolder.query.filter(SharedFolder.user_id.in_(user_id_list),SharedFolder.status == 'active').all()
+    user_conn = {}
+    user_fol = {}
+    for con in users_connection_list:
+        if con.user_id not in user_conn:
+            user_conn[con.user_id] =[]
+        user_conn[con.user_id].append(f"connection_{con.connection_id}")
+
+    for fol in users_shared_folders:
+        if fol.user_id not in user_fol:
+            user_fol[fol.user_id] =[]
+        user_fol[fol.user_id].append(f"agent_{fol.folder_id}")
+
+    final_list = []
+    for use in user_list:
+        f_list = []
+        if user_conn.get(use.get("id")):
+             f_list+=user_conn.get(use.get("id"))
+
+        if user_fol.get(use.get("id")):
+             f_list+=user_fol.get(use.get("id"))
+        use["permissions"] = f_list
+        #if use.get('id') not in final_list:
+            
+        
+    
+    print("user_conn, user_fol",user_conn, user_fol)
+    print("user_list_updated", user_list)
     users = [
             { "id": 'john.doe', "name": 'John Doe', "email": 'john.doe@company.com' },
             { "id": 'jane.smith', "name": 'Jane Smith', "email": 'jane.smith@company.com' },
@@ -97,63 +135,30 @@ def get_connection():
                 "host": conn.host,
                 "conn_type" : "connection"
             })
-        connectionResources = [
-                { 
-                    "id": 'conn_1', 
-                    "name": 'Insurance Database', 
-                    "type": 'PostgreSQL',
-                    "owner": 'admin',
-                    "host": 'localhost',
-                    "port": '5432',
-                    "database": 'insurance_db',
-                    "created": '2025-06-23',
-                    "shared_with": ['john.doe', 'jane.smith']
-                },
-                { 
-                    "id": 'conn_2', 
-                    "name": 'Host INSDB', 
-                    "type": 'MySQL',
-                    "owner": 'admin',
-                    "host": 'host.docker.internal',
-                    "port": '3306',
-                    "database": 'insdb',
-                    "created": '2025-06-27',
-                    "shared_with": ['mike.wilson']
-                },
-                { 
-                    "id": 'conn_3', 
-                    "name": 'Order Database', 
-                    "type": 'PostgreSQL',
-                    "owner": 'john.doe',
-                    "host": 'test-postgres-public.cfswmgecgaow.us-west-2.rds.amazonaws.com',
-                    "port": '5432',
-                    "database": 'orders_db',
-                    "created": '2025-07-02',
-                    "shared_with": ['sarah.johnson']
-                },
-                { 
-                    "id": 'conn_4', 
-                    "name": 'Restaurant System', 
-                    "type": 'MongoDB',
-                    "owner": 'jane.smith',
-                    "host": 'restaurant-cluster.mongodb.net',
-                    "port": '27017',
-                    "database": 'restaurant_db',
-                    "created": '2025-07-23',
-                    "shared_with": ['david.brown']
-                },
-                { 
-                    "id": 'conn_5', 
-                    "name": 'Analytics Warehouse', 
-                    "type": 'Snowflake',
-                    "owner": 'admin',
-                    "host": 'analytics.snowflakecomputing.com',
-                    "port": '443',
-                    "database": 'warehouse_db',
-                    "created": '2025-07-30',
-                    "shared_with": []
-                }
-            ]
+        # connectionResources = [
+        #         { 
+        #             "id": 'conn_1', 
+        #             "name": 'Insurance Database', 
+        #             "type": 'PostgreSQL',
+        #             "owner": 'admin',
+        #             "host": 'localhost',
+        #             "port": '5432',
+        #             "database": 'insurance_db',
+        #             "created": '2025-06-23',
+        #             "shared_with": ['john.doe', 'jane.smith']
+        #         },
+        #         { 
+        #             "id": 'conn_2', 
+        #             "name": 'Host INSDB', 
+        #             "type": 'MySQL',
+        #             "owner": 'admin',
+        #             "host": 'host.docker.internal',
+        #             "port": '3306',
+        #             "database": 'insdb',
+        #             "created": '2025-06-27',
+        #             "shared_with": ['mike.wilson']
+        #         }
+        #     ]
     return jsonify({"message": "Registered successfully", "data":connection_list}), 200
 
 
@@ -173,63 +178,30 @@ def get_folders():
             "model": 'Gemini 2.0 Flash',
             "conn_type" : "folder"
         })
-    agentResources = [
-            { 
-                "id": 'agent_1', 
-                "name": 'Dock Agent', 
-                "type": 'AI Agent',
-                "owner": 'admin',
-                "description": 'Dock Management System',
-                "endpoint": 'dock.agent.internal',
-                "model": 'GPT-4',
-                "created": '2025-07-30',
-                "shared_with": ['john.doe', 'mike.wilson']
-            },
-            { 
-                "id": 'agent_2', 
-                "name": 'HR Agent', 
-                "type": 'AI Agent',
-                "owner": 'admin',
-                "description": 'Human Resources System',
-                "endpoint": 'hr.agent.internal',
-                "model": 'Claude-3',
-                "created": '2025-07-29',
-                "shared_with": ['jane.smith']
-            },
-            { 
-                "id": 'agent_3', 
-                "name": 'Finance Agent', 
-                "type": 'AI Agent',
-                "owner": 'sarah.johnson',
-                "description": 'Financial Management System',
-                "endpoint": 'finance.agent.internal',
-                "model": 'GPT-4',
-                "created": '2025-07-28',
-                "shared_with": ['david.brown']
-            },
-            { 
-                "id": 'agent_4', 
-                "name": 'Customer Support Agent', 
-                "type": 'AI Agent',
-                "owner": 'john.doe',
-                "description": 'Customer Service Assistant',
-                "endpoint": 'support.agent.internal',
-                "model": 'Claude-3',
-                "created": '2025-07-27',
-                "shared_with": []
-            },
-            { 
-                "id": 'agent_5', 
-                "name": 'Data Analysis Agent', 
-                "type": 'AI Agent',
-                "owner": 'admin',
-                "description": 'Data Analytics and Reporting',
-                "endpoint": 'analytics.agent.internal',
-                "model": 'GPT-4',
-                "created": '2025-07-26',
-                "shared_with": ['mike.wilson', 'sarah.johnson']
-            }
-        ]
+    # agentResources = [
+    #         { 
+    #             "id": 'agent_1', 
+    #             "name": 'Dock Agent', 
+    #             "type": 'AI Agent',
+    #             "owner": 'admin',
+    #             "description": 'Dock Management System',
+    #             "endpoint": 'dock.agent.internal',
+    #             "model": 'GPT-4',
+    #             "created": '2025-07-30',
+    #             "shared_with": ['john.doe', 'mike.wilson']
+    #         },
+    #         { 
+    #             "id": 'agent_2', 
+    #             "name": 'HR Agent', 
+    #             "type": 'AI Agent',
+    #             "owner": 'admin',
+    #             "description": 'Human Resources System',
+    #             "endpoint": 'hr.agent.internal',
+    #             "model": 'Claude-3',
+    #             "created": '2025-07-29',
+    #             "shared_with": ['jane.smith']
+    #         }
+    #     ]
     return jsonify({"message": "Registered successfully", "data":folder_list}), 200
 
 
@@ -265,6 +237,7 @@ def share_conn_and_fol():
             'shared_by': current_user.email,
             'user_id': to_user,
             "admin_id" : current_user.id,
+            "folder_id":folder.id,
             'created_at': datetime.now(),
             'total_files': folder.total_files,
             'file_types_json': folder.file_types_json,
@@ -282,6 +255,7 @@ def share_conn_and_fol():
             'shared_by': current_user.email,
             'user_id': to_user,
             "admin_id" : current_user.id,
+            "connection_id": conn.id,
             'host':conn.host,
             'database':conn.database,
             'db_user': conn.db_user,
