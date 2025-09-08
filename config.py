@@ -23,6 +23,8 @@ class Config:
     SEMANTIC_THRESHOLD_AMOUNT = float(os.getenv("SEMANTIC_THRESHOLD_AMOUNT", "0.95")) if os.getenv("SEMANTIC_THRESHOLD_AMOUNT") else None  # Custom threshold
     SEMANTIC_NUMBER_OF_CHUNKS = int(os.getenv("SEMANTIC_NUMBER_OF_CHUNKS")) if os.getenv("SEMANTIC_NUMBER_OF_CHUNKS") else None  # Target number of chunks 
 
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+
     @classmethod
     def init_app(cls, app):
         os.makedirs(cls.UPLOAD_FOLDER, exist_ok=True)

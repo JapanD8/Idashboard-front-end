@@ -24,7 +24,7 @@
             grid-template-columns: 1fr 2fr auto auto;
             gap: 1rem;
             align-items: end;
-            margin-bottom: 2rem;
+            margin-bottom: 0rem;
         }
 
 .form-group {
@@ -65,10 +65,97 @@
     height: fit-content;
     min-width: 100px;
     white-space: nowrap;
+    
+}
+
+.add-btn{
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    height: fit-content;
+    min-width: 100px;
+    white-space: nowrap;
+    margin-top: -20px;
+    background-color: #4a6fa5;
+    color: #eff6ff;
+    margin-left: -20%;
+}
+
+.button-content {
+    height: 19px; /* set a fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-dots {
+   
+    align-items: center;
+    justify-content: center;
+}
+
+.dot {
+    width: 10px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #fff;
+    margin: 0 4px;
+    animation: loading 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loading {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}.loading-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgb(45, 97, 121);
+    margin: 0 4px;
+    animation: loading 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loading {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
 }
 
 .share-btn {
-    background: #3b82f6;
+    background: #4a6fa5;
     color: white;
 }
 
@@ -77,7 +164,7 @@
 }
 
 .remove-btn {
-    background: #ef4444;
+    background: #eb5959;
     color: white;
 }
 
@@ -296,3 +383,4 @@
         grid-template-columns: 1fr;
     }
 }
+

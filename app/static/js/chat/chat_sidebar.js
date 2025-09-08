@@ -78,8 +78,8 @@ if (navigationEntries.length > 0 && navigationEntries[0].type === "reload") {
 fetchSchemaById(chatId,connectionType);
 
 
-function fetchSchemaById(id, type) {
-    fetch(`/connections/${id}/${type}/schema`)
+function fetchSchemaById(id, ctype) {
+    fetch(`/connections/${id}/${ctype}/schema`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {

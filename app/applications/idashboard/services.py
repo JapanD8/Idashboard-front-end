@@ -1,6 +1,7 @@
 from google import genai
 from app.models import User, Connection, ChatSession, Message, AccesstokenData, SharedConnection
 import mysql.connector
+from pymongo import MongoClient
 import pandas as pd
 import json
 import psycopg2
@@ -79,7 +80,7 @@ def re_get_connection(connection_id, user_id, type="connection"):
          return {}, connection_id, "cannnot connect to db"
 
     try:
-        print(repr(connection.name))
+        print(repr(connection.name), repr(connection.db_system))
         if connection.db_system == "PostgreSQL":
             conn = psycopg2.connect(
                 dbname=connection.database,
@@ -106,13 +107,28 @@ def re_get_connection(connection_id, user_id, type="connection"):
             # Save this connection in the global dict using (user_id, connection_id) as key
             active_connections[(user_id, connection_id)] = conn
             print("active_connections",len(active_connections))
+
+        if connection.db_system == "MangoDB":
+            # Build MongoDB connection URI
+            try:
+                print("Mangodb_entere")
+                mongo_uri = f"mongodb://{connection.db_user}:{connection.password}@{connection.host}:{connection.port}/{connection.database}"+"?authSource=admin"
+                
+                client = MongoClient(mongo_uri)
+                db = client[connection.database]   # select the database
+                print("db.list_collection_names()",db.list_collection_names())
+                
+                # Save client/db in your global dict
+                active_connections[(user_id, connection_id)] = db
+            except Exception as e:
+                print(e)
         return active_connections, connection.database, connection.db_system
     except Exception as e:
         return {}, connection_id, e
     
 
 
-def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
+def get_processed_data(schmea, user_question,user_id,connection_id, ctype="connection"):
     active_connections = {}
     print(len(active_connections))
     if  len(active_connections)==0:
@@ -130,7 +146,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
     print("user_id, connection_id",user_id, connection_id, ctype)
     print(schmea)
     conn = active_connections[(user_id, connection_id)]
-    cursor = conn.cursor()
+    #cursor = conn.cursor()
     data ={} 
     if db_system=="MySQL":
         new_content = f""" Role: You are an amazing AI will act as a SQL query generator and data visualization consultant.
@@ -153,6 +169,8 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
             - Note: For a query resulting in a single numerical or string value, use "metric" as the chart type; for queries with more than two values, use "bar" or "pie".
             - Ensure all keys in the JSON output are filled; do not leave any empty.
             - If the user asks a question related to [updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
+            - Never split the date into multiple fields in the output — always return the date as a single, unified field (e.g., YYYY-MM-DD or ISO format).Do not include 00:00:00, +00:00, or any time zone info.
+
 
 
             Example Input:
@@ -191,10 +209,13 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
                 return "No update ot delete allowed try asking different question", {}
             
         result = pd.read_sql_query(json_data.get("query"), conn)
+        for col in result.columns:
+            if result[col].dtype == 'datetime64[ns]' or result[col].dtype == 'datetime64[ns, UTC]':
+                result[col] = result[col].dt.strftime('%Y-%m-%d')
 
         print(result)
     if db_system=="PostgreSQL":
-        new_content = f""" Role: You are an amazing AI will act as a {db_system} query generator and data visualization consultant.
+        new_content_postgres = f""" Role: You are an amazing AI will act as a {db_system} query generator and data visualization consultant.
 
             Task: Generate a {db_system} query and recommend a suitable chart type based on user-defined column names and their corresponding types.
 
@@ -214,6 +235,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
             - Note: For a query resulting in a single numerical or string value, use "metric" as the chart type; for queries with more than two values, use "bar" or "pie".
             - Ensure all keys in the JSON output are filled; do not leave any empty.
             - If the user asks a question related to [updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
+            - strictly follow this: Never split the date into multiple fields in the output — always return the date as a single, unified field (e.g., YYYY-MM-DD or ISO format).Do not include 00:00:00, +00:00, or any time zone info.
 
 
             Example Input:
@@ -223,7 +245,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
 
             Example Output:
             {
-            "query": " SELECT gender, COUNT(*) AS policy_count FROM table_name GROUP BY gender;;",
+            "query": "SELECT gender, COUNT(*) AS policy_count FROM table_name GROUP BY gender;;",
             "chart_type": "bar",
             "x_axis": "gender",
             "y_axis": "Policy Count",
@@ -232,7 +254,7 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
             Note : Avoid Question asked from ouside of Tables, Reply with politely, that time only keep title, set x_axis,y_axis,chart_type and query set null.
             """
         response = client.models.generate_content(
-        model="gemini-2.0-flash", contents= new_content
+        model="gemini-2.0-flash", contents= new_content_postgres
         )
         print(response.text)
         response_text = response.text
@@ -251,9 +273,113 @@ def get_processed_data(schmea, user_question,user_id,connection_id, ctype):
             if "delete" in  json_data.get("query").lower() or "update" in  json_data.get("query").lower():
                 return "No update ot delete allowed try asking different question", {}
         result = pd.read_sql_query(json_data.get("query"), conn)
-    
+        print(result)
+        print(result.dtypes)
+        for col in result.columns:
+            if result[col].dtype == 'datetime64[ns]' or result[col].dtype == 'datetime64[ns, UTC]':
+                result[col] = result[col].dt.strftime('%Y-%m-%d')
 
 
+    if db_system=="MangoDB":
+        new_content_mangodb = f""" Role: You are an amazing AI will act as a {db_system} query generator and data visualization consultant.
+
+            Task: Generate a {db_system} query and recommend a suitable chart type based on user-defined column names and their corresponding types.
+
+            Input Specifications:
+            {schmea}
+            2. User Question: {user_question}.
+
+            Output Format: The output should be in JSON format structured as follows:
+            - 'query': The generated SQL query string.
+            - 'chart_type': The recommended chart type (options: "metric","bar","stackBar","pie","donut","radar",line,"table","funnel"). #Note: if the chartype asked by user not in the list - recommend the best one
+            - 'collection_name: Primary collection name. 
+            - 'x_axis': The name of the x-axis for the chart.
+            - 'y_axis': The name of the y-axis for the chart.
+            - 'title': A descriptive title for the chart."""+"""
+            Constraints:
+            - Always provide a single SQL query.
+            - If the user specifies a chart type, use that type; otherwise, choose an appropriate type based on the query.
+            - Note: For a query resulting in a single numerical or string value, use "metric" as the chart type; for queries with more than two values, use "bar" or "pie".
+            - Ensure all keys in the JSON output are filled; do not leave any empty.
+            - If the user asks a question related to [updating or deleting]  data, set the title, x_axis, y_axis, and query to null, and return only a message like "This action is not allowed.
+            - Ensure query results are ordered correctly — for month-wise totals, the month must come before the total to support accurate chart visualization.  
+            - Never split the date into multiple fields in the output — always return the date as a single, unified field (e.g., YYYY-MM-DD or ISO format).
+     
+
+            Example Input:
+            - Table Name : Collection name
+            - Column Types: `{"gender": "string", "policy_count": "integer"}`
+            - User Question: "How many policies are taken by each gender?"
+
+            Example Output:
+            1) {
+                "query": [
+                    { "$group": { "_id": "$gender", "policy_count": { "$sum": 1 } } },
+                    { "$project": { "gender": "$_id", "policy_count": 1, "_id": 0 } }
+                ],
+                collection_name: "policy" 
+                "chart_type": "bar",
+                "x_axis": "gender",
+                "y_axis": "Policy Count",
+                "title": "Policy Count by Gender"
+                }
+            2){
+                "query": [
+                    {
+                    "$lookup": {
+                        "from": "payment",
+                        "localField": "policy_id",
+                        "foreignField": "policy_id",
+                        "as": "payments"
+                    }
+                    },
+                    {
+                    "$project": {
+                        "policy_id": 1,
+                        "total_payment": { "$sum": "$payments.amount" }
+                    }
+                    }
+                ],
+                collection_name: "policy" 
+                "chart_type": "bar",
+                "x_axis": "policy_id",
+                "y_axis": "Total Payment",
+                "title": "Policy-wise Total Payments"
+                }
+            Note : Avoid Question asked from ouside of Tables, Reply with politely, that time only keep title, set x_axis,y_axis,chart_type and query set null.
+            """
+        response = client.models.generate_content(
+        model="gemini-2.0-flash", contents= new_content_mangodb
+        )
+        print(response.text)
+        response_text = response.text
+        json_data = json.loads(response_text.split("json")[1].split("```")[0])
+        #pjson_data = json.load(json_data)
+        print(type(json_data))
+        #result  = eval(json_data.get("query"))
+        #result = st.session_state.con.execute(json_data.get("query")).fetchdf()
+        
+            
+
+        if json_data.get("x_axis")==None and json_data.get("y_axis")==None and json_data.get("query")==None:
+            return json_data.get("title"), {}
+        if json_data.get("query"):
+            print("delete" in  str(json_data.get("query")).lower() or "update" in  str(json_data.get("query")).lower())
+            if "delete" in  str(json_data.get("query")).lower() or "update" in  str(json_data.get("query")).lower():
+                return "No update ot delete allowed try asking different question", {}
+        coll = conn[json_data.get("collection_name")]
+        result_df= list(coll.aggregate(json_data.get("query")))
+        result = pd.DataFrame(result_df)
+        #result = {}#pd.read_sql_query(json_data.get("query"), conn)
+        keywords = ['total', 'sum', 'count']
+        cols = list(result.columns)
+        if len(cols)>1:
+            if any(keyword in result.columns[0].lower() for keyword in keywords):
+                # Swap the first column with the last column
+                cols[0], cols[-1] = cols[-1], cols[0]
+                result = result[cols]
+
+        result = result[cols]
         print(result)
     if json_data.get("chart_type")=="metric":
         s=1
@@ -874,6 +1000,68 @@ def schema_for_api_calls(user_id, db_id):
         conn.close()
 
         # Print as JSON
+        schema_data["database"] = db_name
+        schema_data["tables"] = schema_json["tables"]
+
+    if db_system == "MangoDB":
+        conn = active_connections[(user_id, connection_id)]
+        #  def get_mangodbcollection_schema(coll):
+        #     pipeline = [
+        #         {"$project": {"fields": {"$objectToArray": "$$ROOT"}}},
+        #         {"$unwind": "$fields"},
+        #         {"$group": {"_id": None, "allKeys": {"$addToSet": "$fields.k"}}}
+        #     ]
+        #     result = list(coll.aggregate(pipeline))
+        #     if result:
+        #         return result[0]["allKeys"]
+        #     return []
+        def get_mangodbcollection_schema(db, collection_name, sample_size=100):
+            collection = db[collection_name]
+    
+            # Sample a few documents
+            docs = collection.find().limit(sample_size)
+            
+            schema = {}
+            
+            for doc in docs:
+                for field, value in doc.items():
+                    if value is None:
+                        field_type = "None"
+                    else:
+                        field_type = type(value).__name__  # ✅ works if type not shadowed
+
+                    if field not in schema:
+                        schema[field] = set()
+                    schema[field].add(field_type)
+
+            # Convert sets to lists for readability
+            schema = {field: list(types) for field, types in schema.items()}
+            return schema
+
+        schema_json = {
+                    "tables": [ 
+                    ]
+                }
+        for coll_name in conn.list_collection_names():
+            #fields = get_mangodbcollection_schema(conn[coll_name])
+            #print(f"🗂 Collection: {coll_name}")
+            #print(f"   Fields: {fields}\n")
+            schema = get_mangodbcollection_schema(conn, coll_name)
+            print(f"Collection: {coll_name}")
+            columns = []
+            for field, types in schema.items():
+                print(f"   {field}: {types}")
+                if field != "_id":
+                    columns.append({"name": field, "type": types[0]})
+            
+            
+            schema_json["tables"].append({
+                "name": coll_name,
+                "columns": columns
+            })
+
+
+
         schema_data["database"] = db_name
         schema_data["tables"] = schema_json["tables"]
 

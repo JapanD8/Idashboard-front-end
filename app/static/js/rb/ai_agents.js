@@ -468,5 +468,13 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+const logoutButton = document.getElementById('logout-button');
+
+logoutButton.addEventListener('click', () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    window.location.href = '/login'; // redirect to login page
+});
+
 //<link rel="stylesheet" href="{{ url_for('static', filename='css/ai_agents.css') }}">
 //<script src="{{ url_for('static', filename='js/rb/ai_agents.js') }}"></script>

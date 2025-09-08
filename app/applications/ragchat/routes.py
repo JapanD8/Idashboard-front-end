@@ -326,13 +326,21 @@ def chat_ai_rag():
             
         # Search for relevant documents  #user_id = current_user.id
         logger.debug(f"DEBUG: Starting document search...")
-        search_results = search_documents(
-            query=usermessage,
-            user_id=ctype_id,
-            file_ids=file_ids,
-            top_k=5
-        )
-        
+        if ctype == "shared":
+            search_results = search_documents(
+                query=usermessage,
+                user_id=ctype_id,
+                file_ids=file_ids,
+                top_k=5
+            )
+        if ctype == "user":
+            search_results = search_documents(
+                query=usermessage,
+                user_id=current_user.id,
+                file_ids=file_ids,
+                top_k=5
+            )
+        print( "active_connections",session_id,usermessage,dbId, file_ids,ctype, current_user.id)
         logger.debug(f"DEBUG: Search completed. Found {len(search_results)} results")
         for i, result in enumerate(search_results):
             logger.debug(f"DEBUG: Result {i+1}:")

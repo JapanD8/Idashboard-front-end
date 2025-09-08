@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.exc import OperationalError
 from dotenv import load_dotenv
+from flask_mail import Mail
 import logging
 
 logging.basicConfig(
@@ -18,7 +19,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 os.environ['POSTHOG_DISABLED'] = 'true'
-
+mail = Mail()
 def create_app():
     load_dotenv()
     
@@ -42,6 +43,14 @@ def create_app():
     app.config['PERMANENT_SESSION_LIFETIME'] = 1800
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_pre_ping': True,'pool_recycle': 280}
     app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
+
+
+    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+    app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+    mail.init_app(app)
 
 
     from config import Config 

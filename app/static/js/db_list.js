@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentConnectionId = null;
     let currentConnectiontype =null;
 
+    const addButton = document.querySelector(".add-db-button");
+  
+    if (addButton) {
+      addButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.location.href = "/add-database";
+      });
+    }
+
     // Function to open the modal
     function openModal(connectionId,connectiontype) {
       currentConnectionId = connectionId;
@@ -179,7 +188,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener for confirm button
     confirmBtn.addEventListener('click', function() {
         if (currentConnectionId) {
-            console.log('Confirm delete clicked for connection ID:', currentConnectionId); // Log the connection ID
+            console.log('Confirm delete clicked for connection ID:', currentConnectionId, currentConnectiontype);
+             // Log the connection ID
+            if(currentConnectiontype === 'shared'){
+             alert("Conact admin to remove connection")
+             }
+             else{
+
             const deledata = {connectionid: currentConnectionId, type : currentConnectiontype};
             fetch(`/connections/${currentConnectionId}`, {
                 method: 'DELETE',
@@ -211,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred while deleting the connection.');
                 closeModal();
             });
+          }
         }
     });
 

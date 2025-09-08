@@ -357,7 +357,7 @@ box-sizing: border-box; /* Include padding in the height calculation */
 }
 
 .chart-container {
-  width: 50%;
+  width: 70%;
 }
 
 .icon-container {

@@ -20,11 +20,25 @@ import random
 from itertools import chain
 import jwt
 import os 
+import random
+import string
+from flask_mail import Message
+from app import mail
 active_connections = {}
+
+from config import Config as config
+
+GOOGLE_API_KEY = config.GOOGLE_API_KEY
+
+
 
 #admin = Blueprint('admin', __name__)
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
+
+def generate_password(length):
+    letters_and_digits = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
 @admin.route('/')
 def home_admin():
@@ -281,3 +295,189 @@ def share_conn_and_fol():
     except Exception as e:
         print("error", e)
         return jsonify({'success': False, 'error': 'server error'}), 404
+    
+
+@admin.route('/api/remove-resources', methods=["PUT"])
+def remove_conn_and_fol():
+    try: 
+        data = request.get_json()
+        print("remove connection data",data)
+        folder_ids = []
+        connection_ids = []
+
+        # remove connection data {'user_id': '1', 'resource_ids': ['connection_27', 'agent_32', 'agent_31']}
+        for resource in data.get("resource_ids"):
+            tname = resource.split("_")[0]
+            id = resource.split("_")[1]
+            if "connection"==tname:
+                connection_ids.append(id)
+            if "agent"==tname:
+                folder_ids.append(id)
+
+
+        shared_folders = SharedFolder.query.filter(
+            SharedFolder.user_id == data.get("user_id"),
+            SharedFolder.folder_id.in_(folder_ids)
+        ).all()
+
+        # Update the status of each shared folder
+        for folder in shared_folders:
+            folder.status = 'inactive'
+
+        # Get the shared connections to update
+        shared_connections = SharedConnection.query.filter(
+            SharedConnection.user_id == data.get("user_id"),
+            SharedConnection.connection_id.in_(connection_ids)
+        ).all()
+
+        # Update the status of each shared connection
+        for connection in shared_connections:
+            connection.status = 'inactive'
+
+        # Commit the changes
+        db.session.commit()
+        db.session.close()
+        return jsonify({"success" : True, "message": " Permission removed successfully", "data":{}}), 200
+    except Exception as e:
+        print("error", e)
+        return jsonify({'success': False, 'error': 'server error'}), 404
+    
+
+@admin.route('/api/invite', methods=['POST'])
+def send_invite():
+    data = request.json
+    print("Invite-data", data)
+    email = data.get('email')
+    folder_ids = []
+    connection_ids = []
+
+    # remove connection data {'user_id': '1', 'resource_ids': ['connection_27', 'agent_32', 'agent_31']}
+    for resource in data.get("resource_ids"):
+        tname = resource.split("_")[0]
+        id = resource.split("_")[1]
+        if "connection"==tname:
+            connection_ids.append(id)
+        if "agent"==tname:
+            folder_ids.append(id)
+
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    existing_user = User.query.filter_by(email=email).first()
+    c_user = current_user.id
+
+    # get conenction and agent information
+    folders_details = UserFolder.query.filter(UserFolder.id.in_(folder_ids)).all()
+    connections_details = Connection.query.filter(Connection.id.in_(connection_ids)).all()
+    folder_insert_values = []
+    conn_insert_values = []
+
+    if existing_user:
+        user_id = existing_user.id
+
+    else:
+        new_user = User(email=email, password=password, role="user")
+        db.session.add(new_user)
+        db.session.commit()
+        user_id = new_user.id
+
+
+    for folder in folders_details:
+            folder_insert_values.append({
+            'name': folder.name,
+            'shared_by': current_user.email,
+            'user_id': user_id,
+            "admin_id" : current_user.id,
+            "folder_id":folder.id,
+            'created_at': datetime.now(),
+            'total_files': folder.total_files,
+            'file_types_json': folder.file_types_json,
+            'status': 'active',
+            'folder_location': f"uploads/user_{c_user}/folder_{folder.id}",
+            'created_at': datetime.now()
+        })
+
+    db.session.bulk_insert_mappings(SharedFolder, folder_insert_values)
+    db.session.commit() 
+
+    for conn in connections_details:
+        conn_insert_values.append({
+        'name': conn.name,
+        'shared_by': current_user.email,
+        'user_id': user_id,
+        "admin_id" : current_user.id,
+        "connection_id": conn.id,
+        'host':conn.host,
+        'database':conn.database,
+        'db_user': conn.db_user,
+        'password':conn.password,
+        'port':conn.port,
+        'db_system':conn.db_system,
+        'status': 'active',
+        'created_at': datetime.now()
+        })
+    db.session.bulk_insert_mappings(SharedConnection, conn_insert_values)
+    db.session.commit() 
+
+    
+
+    connection_names = db.session.query(Connection).filter(
+        Connection.id.in_(connection_ids)
+    ).all()
+
+    connection_dict = {conn.id: conn.name for conn in connection_names}
+
+    # Query SharedFolder names
+    folder_nam = db.session.query(UserFolder).filter(
+        UserFolder.id.in_(folder_ids)
+    ).all()
+
+    folder_dict = {folder.id: folder.name for folder in folder_nam}
+    connection_names = list(connection_dict.values())
+    topic_names = list(folder_dict.values())
+    print("connection_names",connection_names)
+    print("topic_names", topic_names)
+    # New user, send invite email with login credentials
+    username = email
+    password = generate_password(8)
+
+    # new_user = User(email=email, password=password, role="user")
+    # db.session.add(new_user)
+    # db.session.commit()
+    # user_id = new_user.id
+    db.session.close()
+
+    msg = Message('Login Credentials',
+                    sender=current_app.config['MAIL_USERNAME'],
+                    recipients=[email])
+    msg.html = f"""
+        Dear User,
+
+        <p>You have been invited to login to our application.</p>
+
+        <p>Your login credentials are:</p>
+
+        <ul>
+            <li><strong>Username:</strong> {username}</li>
+            <li><strong>Password:</strong> {password}</li>
+        </ul>
+
+        <p>You have been granted permission to access the following folders and databases:</p>
+
+        <ul>
+            <li><strong>Databases:</strong> {",".join(connection_names)}</li>
+            <li><strong>Topics:</strong>{",".join(topic_names)}</li>
+        </ul>
+
+        <p>Please click the following link to login:</p>
+
+        <p><a href="http://192.168.1.8:5001/login" style="background-color: #2d6179; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none;">Login to iDashboard</a></p>
+
+        <p>Best regards,<br>GETO</p>
+    """
+    try:
+        mail.send(msg)
+        return jsonify({'message': 'Credentials have been shared by email.', "success": True}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

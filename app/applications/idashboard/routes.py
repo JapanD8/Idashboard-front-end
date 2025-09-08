@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from .services import re_get_connection , get_processed_data, generate_unique_embed_id, validate_access_token, create_access_token, schema_for_api_calls
 import mysql.connector
+from pymongo import MongoClient
 import psycopg2
 from collections import defaultdict
 import json
@@ -310,7 +311,7 @@ def connect_connection(connection_id, type):
         print(repr(connection.name))
         print(repr(connection.db_system))
         # Establish the connection to the third-party database
-        print(connection.db_system == "PostgreSQL")
+        
         if connection.db_system == "PostgreSQL":
             try:
                 print("Entered")
@@ -341,11 +342,20 @@ def connect_connection(connection_id, type):
             # Save this connection in the global dict using (user_id, connection_id) as key
             active_connections[(current_user.id, connection_id)] = conn
 
-            # # Optionally mark it as connected in DB
-            # connection.is_connected = True
-            # db.session.commit()
 
-            return jsonify({'success': True})
+        if connection.db_system == "MangoDB":
+            # Build MongoDB connection URI
+            mongo_uri = f"mongodb://{connection.db_user}:{connection.password}@{connection.host}:{connection.port}/{connection.database}"
+            
+            client = MongoClient(mongo_uri)
+            db = client[connection.database]   # select the database
+            
+            # Save client/db in your global dict
+            active_connections[(current_user.id, connection_id)] = db
+
+            
+
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -421,14 +431,14 @@ def disconnect_connection(connection_id, type):
 
 ######## ----chat page routings------
 
-@main.route('/connections/<int:connection_id>/<string:type>/schema', methods=['GET'])
+@main.route('/connections/<int:connection_id>/<string:ctype>/schema', methods=['GET'])
 @login_required
-def get_schema(connection_id, type):
+def get_schema(connection_id, ctype):
     active_connections = {}
     db_system =""
     if len(active_connections)==0:
         print("Before active_connections length",len(active_connections))
-        active_connections, db_name, db_system = re_get_connection(connection_id, current_user.id, type=type)
+        active_connections, db_name, db_system = re_get_connection(connection_id, current_user.id, type=ctype)
     print("After",len(active_connections), db_name)
     if (current_user.id, connection_id) not in active_connections:
         return jsonify({'success': False, 'error': 'Connection not found'}), 404
@@ -503,6 +513,71 @@ def get_schema(connection_id, type):
         # Print as JSON
         schema_data["database"] = db_name
         schema_data["tables"] = schema_json["tables"]
+
+
+    if db_system == "MangoDB":
+        conn = active_connections[(current_user.id, connection_id)]
+        #  def get_mangodbcollection_schema(coll):
+        #     pipeline = [
+        #         {"$project": {"fields": {"$objectToArray": "$$ROOT"}}},
+        #         {"$unwind": "$fields"},
+        #         {"$group": {"_id": None, "allKeys": {"$addToSet": "$fields.k"}}}
+        #     ]
+        #     result = list(coll.aggregate(pipeline))
+        #     if result:
+        #         return result[0]["allKeys"]
+        #     return []
+        def get_mangodbcollection_schema(db, collection_name, sample_size=100):
+            collection = db[collection_name]
+    
+            # Sample a few documents
+            docs = collection.find().limit(sample_size)
+            
+            schema = {}
+            
+            for doc in docs:
+                for field, value in doc.items():
+                    if value is None:
+                        field_type = "None"
+                    else:
+                        field_type = type(value).__name__  # ✅ works if type not shadowed
+
+                    if field not in schema:
+                        schema[field] = set()
+                    schema[field].add(field_type)
+
+            # Convert sets to lists for readability
+            schema = {field: list(types) for field, types in schema.items()}
+            return schema
+
+        schema_json = {
+                    "tables": [ 
+                    ]
+                }
+        for coll_name in conn.list_collection_names():
+            #fields = get_mangodbcollection_schema(conn[coll_name])
+            #print(f"🗂 Collection: {coll_name}")
+            #print(f"   Fields: {fields}\n")
+            schema = get_mangodbcollection_schema(conn, coll_name)
+            print(f"Collection: {coll_name}")
+            columns = []
+            for field, types in schema.items():
+                print(f"   {field}: {types}")
+                if field != "_id":
+                    columns.append({"name": field, "type": types[0]})
+            
+            
+            schema_json["tables"].append({
+                "name": coll_name,
+                "columns": columns
+            })
+
+
+
+        schema_data["database"] = db_name
+        schema_data["tables"] = schema_json["tables"]
+    
+
 
     return jsonify({'success': True, "data": schema_data})
 
@@ -596,19 +671,19 @@ def chat_ai():
         result, ai_data = get_processed_data(schema_data,usermessage, current_user.id, dbId, ctype)
         print("result,ai_data",result,ai_data)
 
-        chart_descriptions = [
-        "A chart showing motivational messages by theme.",
-        "Each row represents an inspiring quote and its focus area.",
-        "The table includes message number, text, and category.",
-        "This layout helps organize ideas clearly and visually.",
-        "Themes include coding, growth, innovation, and more.",
-        "It's a clean way to present information in rows and columns.",
-        "The format makes data easy to scan and understand quickly.",
-        "Messages encourage creativity, learning, and persistence.",
-        "Designed to look like a markdown-style table.",
-        "Perfect for documentation, presentations, or dashboards."
-        ]
-        aimessage = random.choice(chart_descriptions)
+        # chart_descriptions = [
+        # "A chart showing motivational messages by theme.",
+        # "Each row represents an inspiring quote and its focus area.",
+        # "The table includes message number, text, and category.",
+        # "This layout helps organize ideas clearly and visually.",
+        # "Themes include coding, growth, innovation, and more.",
+        # "It's a clean way to present information in rows and columns.",
+        # "The format makes data easy to scan and understand quickly.",
+        # "Messages encourage creativity, learning, and persistence.",
+        # "Designed to look like a markdown-style table.",
+        # "Perfect for documentation, presentations, or dashboards."
+        # ]
+        aimessage = ""
         data = {"message":"I am here to help you with SQL queries and data visualization"}
         if type(result)==str:
             aimessage =result

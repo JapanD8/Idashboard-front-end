@@ -7,13 +7,17 @@ let selectedAgents = new Set();
 let currentView = 'admin';
 let currentUserView = 'john.doe';
 let selectedResources = new Set();
+const resourceNameMap = new Map();
 let userPermissions = {};
+
+    
 console.log("file loaded")
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
   fetchUsers();
   fetchConnectionResources();
   fetchAgentResources();
+  
 });
 
 // Update share button state
@@ -109,10 +113,89 @@ async function fetchUsers() {
     }
 }
 
+// function updateResourceSelections() {
+//     const selectedUserId = document.getElementById('userSelect').value;
+//     if (!selectedUserId) {
+//     // Reset all checkboxes and selections when no user is selected
+//     connectionResources.forEach(resource => {
+//         document.getElementById(`check_conn_${resource.id}`).checked = false;
+//         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+//     });
+//     agentResources.forEach(resource => {
+//         document.getElementById(`check_agent_${resource.id}`).checked = false;
+//         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+//     });
+//     selectedConnections.clear();
+//     selectedAgents.clear();
+//     updateSelectedCount();
+//     return;
+//     }
+
+//     const permissions = userPermissions[selectedUserId];
+//     selectedConnections.clear();
+//     selectedAgents.clear();
+
+//     permissions.forEach(permission => {
+//     if (connectionResources.find(resource => `connection_${resource.id}` === permission)) {
+//         const resourceId = connectionResources.find(resource => `connection_${resource.id}` === permission).id;
+//         selectedConnections.add(resourceId);
+//         document.getElementById(`check_conn_${resourceId}`).checked = true;
+//         document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+//     } else if (agentResources.find(resource => `agent_${resource.id}` === permission)) {
+//         const resourceId = agentResources.find(resource => `agent_${resource.id}` === permission).id;
+//         selectedAgents.add(resourceId);
+//         document.getElementById(`check_agent_${resourceId}`).checked = true;
+//         document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+//     }
+//     });
+
+//     // Uncheck resources that are not in permissions
+//     connectionResources.forEach(resource => {
+//     if (!permissions.includes(`connection_${resource.id}`)) {
+//         document.getElementById(`check_conn_${resource.id}`).checked = false;
+//         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+//         if (selectedConnections.has(resource.id)) {
+//         selectedConnections.delete(resource.id);
+//         }
+//     }
+//     });
+
+//     agentResources.forEach(resource => {
+//     if (!permissions.includes(`agent_${resource.id}`)) {
+//         document.getElementById(`check_agent_${resource.id}`).checked = false;
+//         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+//         if (selectedAgents.has(resource.id)) {
+//         selectedAgents.delete(resource.id);
+//         }
+//     }
+//     });
+
+//     updateSelectedCount();
+//     updateShareButton();
+//   //updateRemoveButton();
+// }
 function updateResourceSelections() {
     const selectedUserId = document.getElementById('userSelect').value;
     if (!selectedUserId) {
-    // Reset all checkboxes and selections when no user is selected
+        // Reset all checkboxes and selections when no user is selected
+        connectionResources.forEach(resource => {
+            document.getElementById(`check_conn_${resource.id}`).checked = false;
+            document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+        });
+        agentResources.forEach(resource => {
+            document.getElementById(`check_agent_${resource.id}`).checked = false;
+            document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
+        });
+        selectedConnections.clear();
+        selectedAgents.clear();
+        resourceNameMap.clear();
+        selectedResources.clear();
+        updateSelectedCount();
+        updateSelectedResourcesInput();
+        return;
+    }
+
+    // Uncheck all checkboxes
     connectionResources.forEach(resource => {
         document.getElementById(`check_conn_${resource.id}`).checked = false;
         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
@@ -121,54 +204,46 @@ function updateResourceSelections() {
         document.getElementById(`check_agent_${resource.id}`).checked = false;
         document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
     });
+
+    resourceNameMap.clear();
+    selectedResources.clear();
     selectedConnections.clear();
     selectedAgents.clear();
-    updateSelectedCount();
-    return;
-    }
 
     const permissions = userPermissions[selectedUserId];
-    selectedConnections.clear();
-    selectedAgents.clear();
-
     permissions.forEach(permission => {
-    if (connectionResources.find(resource => `connection_${resource.id}` === permission)) {
-        const resourceId = connectionResources.find(resource => `connection_${resource.id}` === permission).id;
-        selectedConnections.add(resourceId);
-        document.getElementById(`check_conn_${resourceId}`).checked = true;
-        document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
-    } else if (agentResources.find(resource => `agent_${resource.id}` === permission)) {
-        const resourceId = agentResources.find(resource => `agent_${resource.id}` === permission).id;
-        selectedAgents.add(resourceId);
-        document.getElementById(`check_agent_${resourceId}`).checked = true;
-        document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
-    }
-    });
-
-    // Uncheck resources that are not in permissions
-    connectionResources.forEach(resource => {
-    if (!permissions.includes(`connection_${resource.id}`)) {
-        document.getElementById(`check_conn_${resource.id}`).checked = false;
-        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
-        if (selectedConnections.has(resource.id)) {
-        selectedConnections.delete(resource.id);
+        if (connectionResources.find(resource => `connection_${resource.id}` === permission)) {
+            const resourceId = connectionResources.find(resource => `connection_${resource.id}` === permission).id;
+            document.getElementById(`check_conn_${resourceId}`).checked = true;
+            document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+            selectedConnections.add(resourceId);
+            const resource = connectionResources.find(r => r.id === resourceId);
+            const resourceKey = `connection_${resourceId}`;
+            const resourceName = `🔗 ${resource.name}`;
+            selectedResources.add(resourceKey);
+            resourceNameMap.set(resourceKey, resourceName);
+        } else if (agentResources.find(resource => `agent_${resource.id}` === permission)) {
+            const resourceId = agentResources.find(resource => `agent_${resource.id}` === permission).id;
+            document.getElementById(`check_agent_${resourceId}`).checked = true;
+            document.querySelector(`[data-resource-id="${resourceId}"]`).classList.add('selected');
+            selectedAgents.add(resourceId);
+            const resource = agentResources.find(r => r.id === resourceId);
+            const resourceKey = `agent_${resourceId}`;
+            const resourceName = `🤖 ${resource.name}`;
+            selectedResources.add(resourceKey);
+            resourceNameMap.set(resourceKey, resourceName);
         }
-    }
-    });
-
-    agentResources.forEach(resource => {
-    if (!permissions.includes(`agent_${resource.id}`)) {
-        document.getElementById(`check_agent_${resource.id}`).checked = false;
-        document.querySelector(`[data-resource-id="${resource.id}"]`).classList.remove('selected');
-        if (selectedAgents.has(resource.id)) {
-        selectedAgents.delete(resource.id);
-        }
-    }
     });
 
     updateSelectedCount();
     updateShareButton();
-  //updateRemoveButton();
+    updateSelectedResourcesInput();
+}
+
+function updateSelectedResourcesInput() {
+    const selectedResourcesInput = document.getElementById('selectedResources');
+    const selectedNames = Array.from(selectedResources).map(resourceKey => resourceNameMap.get(resourceKey));
+    selectedResourcesInput.value = selectedNames.join(', ');
 }
 
 //--fetch user ------------------------------------------------
@@ -183,6 +258,8 @@ async function fetchConnectionResources() {
     connectionResources = data.data;
     renderConnectionResources();
     allResources = [...connectionResources, ...agentResources];
+    updateSelectedCount();
+    updateShareButton();
   } catch (error) {
     console.error('Error fetching connection resources:', error);
   }
@@ -196,6 +273,8 @@ async function fetchAgentResources() {
     agentResources = data.data;
     renderAgentResources();
     allResources = [...connectionResources, ...agentResources];
+    updateSelectedCount();
+    updateShareButton();
   } catch (error) {
     console.error('Error fetching agent resources:', error);
   }
@@ -241,7 +320,7 @@ function renderConnectionResources() {
   `).join('');
 }
 
-// Render agent resources grid
+//Render agent resources grid
 function renderAgentResources() {
   const container = document.getElementById('agentsGrid');
   
@@ -261,16 +340,20 @@ function renderAgentResources() {
   `).join('');
 }
 
+
+
 // Rest of your code remains the same...
 
 // Handle clicking on resource item (not checkbox)
-function handleResourceClick(resourceId, event) {
+function handleResourceClick(type, resourceId, event) {
     // Don't toggle if clicking on checkbox directly
     if (event.target.type === 'checkbox') {
         return;
     }
     
-    toggleResourceSelection(resourceId);
+    const checkbox = document.getElementById(`check_${type}_${resourceId}`);
+    checkbox.checked = !checkbox.checked;
+    toggleResourceSelection(type, resourceId);
 }
 
 // Select all connections
@@ -307,27 +390,27 @@ function deselectAllConnections() {
   }
 
 
-function updateSelectedResourcesInput() {
-    const selectedResourcesInput = document.getElementById('selectedResources');
-    const selectedResourcesArray = Array.from(selectedResources);
-    selectedResourcesInput.value = selectedResourcesArray.join(', ');
-}
+// function updateSelectedResourcesInput() {
+//     const selectedResourcesInput = document.getElementById('selectedResources');
+//     const selectedResourcesArray = Array.from(selectedResources);
+//     selectedResourcesInput.value = selectedResourcesArray.join(', ');
+// }
 
 
 // Clear connection selections
-function clearConnectionSelections() {
-    selectedConnections.clear();
+// function clearConnectionSelections() {
+//     selectedConnections.clear();
     
-    document.querySelectorAll('#connectionsGrid .resource-item').forEach(item => {
-        item.classList.remove('selected');
-    });
-    document.querySelectorAll('#connectionsGrid .checkbox').forEach(checkbox => {
-        checkbox.checked = false;
-    });
+//     document.querySelectorAll('#connectionsGrid .resource-item').forEach(item => {
+//         item.classList.remove('selected');
+//     });
+//     document.querySelectorAll('#connectionsGrid .checkbox').forEach(checkbox => {
+//         checkbox.checked = false;
+//     });
     
-    updateSelectedCount();
-    updateShareButton();
-}
+//     updateSelectedCount();
+//     updateShareButton();
+// }
 
 // Select all agents
 function selectAllAgents() {
@@ -346,8 +429,61 @@ function selectAllAgents() {
 }
 
 // Clear agent selections
+// function clearAgentSelections() {
+//     selectedAgents.clear();
+    
+//     document.querySelectorAll('#agentsGrid .resource-item').forEach(item => {
+//         item.classList.remove('selected');
+//     });
+//     document.querySelectorAll('#agentsGrid .checkbox').forEach(checkbox => {
+//         checkbox.checked = false;
+//     });
+    
+//     updateSelectedCount();
+//     updateShareButton();
+// }
+
+function clearConnectionSelections() {
+    selectedConnections.clear();
+    
+    for (let resource of selectedResources) {
+        if (resource.startsWith('connection_')) {
+            selectedResources.delete(resource);
+        }
+    }
+    
+    for (let [key, value] of resourceNameMap) {
+        if (key.startsWith('connection_')) {
+            resourceNameMap.delete(key);
+        }
+    }
+    
+    document.querySelectorAll('#connectionsGrid .resource-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    document.querySelectorAll('#connectionsGrid .checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    updateSelectedCount();
+    updateShareButton();
+    updateSelectedResourcesInput();
+}
+
 function clearAgentSelections() {
     selectedAgents.clear();
+    
+    for (let resource of selectedResources) {
+        if (resource.startsWith('agent_')) {
+            selectedResources.delete(resource);
+        }
+    }
+    
+    for (let [key, value] of resourceNameMap) {
+        if (key.startsWith('agent_')) {
+            resourceNameMap.delete(key);
+        }
+    }
     
     document.querySelectorAll('#agentsGrid .resource-item').forEach(item => {
         item.classList.remove('selected');
@@ -358,9 +494,204 @@ function clearAgentSelections() {
     
     updateSelectedCount();
     updateShareButton();
+    updateSelectedResourcesInput();
 }
+// // Toggle resource selection
+// function toggleResourceSelection(type, resourceId, event) {
+//     // Prevent event bubbling if called from checkbox
+//     if (event && event.target && event.target.type === 'checkbox') {
+//         event.stopPropagation();
+//     }
+    
+//     let checkboxId;
+//     if (type === 'connection') {
+//         checkboxId = `check_conn_${resourceId}`;
+//     } else if (type === 'agent') {
+//         checkboxId = `check_agent_${resourceId}`;
+//     }
+    
+//     const checkbox = document.getElementById(checkboxId);
+    
+//     if (!checkbox) {
+//         console.error(`Checkbox not found for ${checkboxId}`);
+//         return;
+//     }
+    
+//     const resourceItem = checkbox.closest('.resource-item');
+//     const resourceKey = `${type}_${resourceId}`;
+//     const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     const resourceName = resourceNameElement.textContent.trim();
+    
+//     let prefix;
+//     if (type === 'connection') {
+//         prefix = '🔗 ';
+//     } else {
+//         prefix = '🤖 ';
+//     }
+    
+//     if (checkbox.checked) {
+//         resourceItem.classList.add('selected');
+//         console.log("resourceKey- checked",resourceKey)
+//         selectedResources.add(resourceKey);
+//         if (type === 'connection') {
+//             selectedConnections.add(resourceId);
+//         } else {
+//             selectedAgents.add(resourceId);
+//         }
+//     } else {
+//         resourceItem.classList.remove('selected');
+//         selectedResources.delete(resourceKey);
+//         console.log("resourceKey- remove",resourceKey)
+//         if (type === 'connection') {
+//             selectedConnections.delete(resourceId);
+//         } else {
+//             selectedAgents.delete(resourceId);
+//         }
+//     }
 
-// Toggle resource selection
+//     updateSelectedCount();
+//     updateShareButton();
+    
+    
+//     // const selectedResourcesInput = document.getElementById('selectedResources');
+//     // const selectedNames = [];
+    
+//     // // Add selected connection names
+//     // Array.from(selectedConnections).forEach(id => {
+//     //     const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
+//     //     const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     //     selectedNames.push(`🔗 ${resourceNameElement.textContent.trim()}`);
+//     // });
+    
+//     // // Add selected agent names
+//     // Array.from(selectedAgents).forEach(id => {
+//     //     const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
+//     //     const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     //     selectedNames.push(`🤖 ${resourceNameElement.textContent.trim()}`);
+//     // });
+    
+//     // selectedResourcesInput.value = selectedNames.join(', ');
+//     const selectedResourcesInput = document.getElementById('selectedResources');
+//     console.log("selectedResourcesInput",selectedResourcesInput);
+//     //const selectedNames = new Set();
+
+//     // // Add selected connection names
+//     // Array.from(selectedConnections).forEach(id => {
+//     //     const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
+//     //     if (resourceItem) {
+//     //         const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     //         if (resourceNameElement) {
+//     //             selectedNames.add(`🔗 ${resourceNameElement.textContent.trim()}`);
+//     //         }
+//     //     }
+//     // });
+
+//     // // Add selected agent names
+//     // Array.from(selectedAgents).forEach(id => {
+//     //     const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
+//     //     if (resourceItem) {
+//     //         const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     //         if (resourceNameElement) {
+//     //             selectedNames.add(`🤖 ${resourceNameElement.textContent.trim()}`);
+//     //         }
+//     //     }
+//     // });
+
+//     const currentValue = selectedResourcesInput.value.split(', ');
+//     const selectedNames = new Set(currentValue);
+//     console.log("initiasl",currentValue)
+//     Array.from(selectedResources).forEach(resourceKey => {
+//         const [type, id] = resourceKey.split('_');
+//         const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
+//         if (resourceItem) {
+//             const resourceNameElement = resourceItem.querySelector('.resource-title');
+//             if (resourceNameElement) {
+//                 if (type === 'connection') {
+//                     selectedNames.add(`🔗 ${resourceNameElement.textContent.trim()}`);
+//                 } else if (type === 'agent') {
+//                     selectedNames.add(`🤖 ${resourceNameElement.textContent.trim()}`);
+//                 }
+//             }
+//         }
+//     });
+
+//     Array.from(selectedNames).forEach(name => {
+//         if (!Array.from(selectedResources).some(resourceKey => {
+//             const resourceItem = document.querySelector(`.resource-item[data-resource-id="${resourceKey.split('_')[1]}"]`);
+//             const resourceNameElement = resourceItem.querySelector('.resource-title');
+//             return resourceNameElement && resourceNameElement.textContent.trim() === name.replace(/^(🔗|🤖) /, '');
+//         })) {
+//             selectedNames.delete(name);
+//         }
+//     });
+
+
+
+//     console.log("selectedNames",selectedNames); 
+//     selectedResourcesInput.value = Array.from(selectedNames).join(', ');
+
+    
+    
+// }
+
+// function toggleResourceSelection(type, resourceId, event) {
+//     // Prevent event bubbling if called from checkbox
+//     if (event && event.target && event.target.type === 'checkbox') {
+//         event.stopPropagation();
+//     }
+    
+//     let checkboxId;
+//     if (type === 'connection') {
+//         checkboxId = `check_conn_${resourceId}`;
+//     } else if (type === 'agent') {
+//         checkboxId = `check_agent_${resourceId}`;
+//     }
+    
+//     const checkbox = document.getElementById(checkboxId);
+    
+//     if (!checkbox) {
+//         console.error(`Checkbox not found for ${checkboxId}`);
+//         return;
+//     }
+    
+//     const resourceItem = checkbox.closest('.resource-item');
+//     const resourceKey = `${type}_${resourceId}`;
+//     const resourceNameElement = resourceItem.querySelector('.resource-title');
+//     const resourceName = resourceNameElement.textContent.trim();
+    
+//     let prefix;
+//     if (type === 'connection') {
+//         prefix = '🔗 ';
+//     } else {
+//         prefix = '🤖 ';
+//     }
+    
+//     if (checkbox.checked) {
+//         resourceItem.classList.add('selected');
+//         selectedResources.add(resourceKey);
+//         resourceNameMap.set(resourceKey, prefix + resourceName);
+//         if (type === 'connection') {
+//             selectedConnections.add(resourceId);
+//         } else {
+//             selectedAgents.add(resourceId);
+//         }
+//     } else {
+//         resourceItem.classList.remove('selected');
+//         selectedResources.delete(resourceKey);
+//         resourceNameMap.delete(resourceKey);
+//         if (type === 'connection') {
+//             selectedConnections = new Set([...selectedConnections].filter(id => id !== resourceId));
+//         } else {
+//             selectedAgents = new Set([...selectedAgents].filter(id => id !== resourceId));
+//         }
+//     }
+
+//     updateSelectedCount();
+//     updateShareButton();
+//     updateSelectedResourcesInput();
+   
+// }
+
 function toggleResourceSelection(type, resourceId, event) {
     // Prevent event bubbling if called from checkbox
     if (event && event.target && event.target.type === 'checkbox') {
@@ -393,50 +724,58 @@ function toggleResourceSelection(type, resourceId, event) {
         prefix = '🤖 ';
     }
     
-    if (selectedResources.has(resourceKey)) {
-        selectedResources.delete(resourceKey);
-        if (type === 'connection') {
-            selectedConnections.delete(resourceId);
-        } else {
-            selectedAgents.delete(resourceId);
-        }
-        checkbox.checked = false;
-        resourceItem.classList.remove('selected');
-    } else {
-        selectedResources.add(resourceKey);
-        if (type === 'connection') {
-            selectedConnections.add(resourceId);
-        } else {
-            selectedAgents.add(resourceId);
-        }
-        checkbox.checked = true;
+    if (checkbox.checked) {
         resourceItem.classList.add('selected');
+        selectedResources.add(resourceKey);
+        resourceNameMap.set(resourceKey, prefix + resourceName);
+        if (type === 'connection') {
+            selectedConnections.add(Number(resourceId));
+        } else {
+            selectedAgents.add(Number(resourceId));
+        }
+    } else {
+        resourceItem.classList.remove('selected');
+        selectedResources.delete(resourceKey);
+        resourceNameMap.delete(resourceKey);
+        if (type === 'connection') {
+            selectedConnections = new Set([...selectedConnections].filter(id => id !== Number(resourceId)));
+        } else {
+            selectedAgents = new Set([...selectedAgents].filter(id => id !== Number(resourceId)));
+        }
     }
-    
+
     updateSelectedCount();
     updateShareButton();
-    
-    const selectedResourcesInput = document.getElementById('selectedResources');
-    const selectedNames = [];
-    
-    // Add selected connection names
-    Array.from(selectedConnections).forEach(id => {
-        const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
-        const resourceNameElement = resourceItem.querySelector('.resource-title');
-        selectedNames.push(`🔗 ${resourceNameElement.textContent.trim()}`);
-    });
-    
-    // Add selected agent names
-    Array.from(selectedAgents).forEach(id => {
-        const resourceItem = document.querySelector(`.resource-item[data-resource-id="${id}"]`);
-        const resourceNameElement = resourceItem.querySelector('.resource-title');
-        selectedNames.push(`🤖 ${resourceNameElement.textContent.trim()}`);
-    });
-    
-    selectedResourcesInput.value = selectedNames.join(', ');
+    updateSelectedResourcesInput();
 }
 
+
 // Update selected count display
+// function updateSelectedCount() {
+//     const connectionCount = selectedConnections.size;
+//     const agentCount = selectedAgents.size;
+//     const totalCount = connectionCount + agentCount;
+    
+//     document.getElementById('selectedCount').textContent = `(${totalCount})`;
+    
+//     const sselectedNames = [];
+//     // Add selected connection names
+//     Array.from(selectedConnections).forEach(id => {
+//         const resource = connectionResources.find(r => r.id === id);
+//         if (resource) sselectedNames.push(`🔗 ${resource.name}`);
+//     });
+    
+//     // Add selected agent names
+//     Array.from(selectedAgents).forEach(id => {
+//         const resource = agentResources.find(r => r.id === id);
+//         if (resource) sselectedNames.push(`🤖 ${resource.name}`);
+//     });
+    
+//     document.getElementById('selectedResources').value = sselectedNames.join(', ');
+//     const removeBtn = document.getElementById('removeBtn');
+//     removeBtn.disabled = selectedConnections.size === 0 && selectedAgents.size === 0;
+// }
+
 function updateSelectedCount() {
     const connectionCount = selectedConnections.size;
     const agentCount = selectedAgents.size;
@@ -444,24 +783,24 @@ function updateSelectedCount() {
     
     document.getElementById('selectedCount').textContent = `(${totalCount})`;
     
-    const selectedNames = [];
-    
+    const sselectedNames = [];
     // Add selected connection names
     Array.from(selectedConnections).forEach(id => {
-        const resource = connectionResources.find(r => r.id === id);
-        if (resource) selectedNames.push(`🔗 ${resource.name}`);
+        const resource = connectionResources.find(r => r.id === Number(id));
+        if (resource) sselectedNames.push(`🔗 ${resource.name}`);
     });
     
     // Add selected agent names
     Array.from(selectedAgents).forEach(id => {
-        const resource = agentResources.find(r => r.id === id);
-        if (resource) selectedNames.push(`🤖 ${resource.name}`);
+        const resource = agentResources.find(r => r.id === Number(id));
+        if (resource) sselectedNames.push(`🤖 ${resource.name}`);
     });
     
-    document.getElementById('selectedResources').value = selectedNames.join(', ');
+    document.getElementById('selectedResources').value = sselectedNames.join(', ');
     const removeBtn = document.getElementById('removeBtn');
     removeBtn.disabled = selectedConnections.size === 0 && selectedAgents.size === 0;
 }
+
 
 
 function showNotification(message, type = 'success') {
@@ -495,16 +834,19 @@ async function removeResources() {
         return;
     }
 
-    const resourceIds = [...selectedConnections, ...selectedAgents];
+    //const resourceIds = [...selectedConnections, ...selectedAgents];
+    const resourceIds = Array.from(selectedResources);
     
     if (resourceIds.length === 0) {
         showNotification('Please select at least one resource', 'error');
         return;
     }
 
+    console.log("selectedUser",selectedUser)
+    console.log("resourceIds",resourceIds)
     try {
-        const response = await fetch('/api/remove-resources', {
-            method: 'POST',
+        const response = await fetch('/admin/api/remove-resources', {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -522,8 +864,10 @@ async function removeResources() {
             selectedConnections.clear();
             selectedAgents.clear();
             updateSelectedCount();
+            fetchUsers();
             renderConnectionResources();
             renderAgentResources();
+
         } else {
             showNotification(data.message, 'error');
         }
@@ -677,6 +1021,9 @@ async function shareResources() {
             
             const userName = users.find(u => u.id === selectedUser)?.name || selectedUser;
             showNotification(`Successfully shared ${resourceIds.length} resource(s) with ${userName}`, 'success');
+            fetchUsers();
+            fetchConnectionResources();
+            fetchAgentResources();
         } else {
             throw new Error('Sharing failed');
         }
@@ -691,6 +1038,92 @@ async function shareResources() {
         updateShareButton();
     }
 }
+
+
+
+async function addnewuserresource() {
+    
+    const emailInput = document.getElementById('addnewuserresources');
+    const email = emailInput.value.trim();
+
+    if (!email) {
+        showNotification('Please enter an email address', 'error');
+        return;
+    }
+
+    const resourceIds = Array.from(selectedResources);
+    
+    if (resourceIds.length === 0) {
+        showNotification('Please select at least one resource', 'error');
+        return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        //alert('Please enter a valid email address');
+        showNotification('Please enter a valid email address', 'error');
+        return;
+    }
+
+    const button = document.getElementById('addBtn');
+    const buttonText = document.getElementById('button-text');
+    const loadingAnimation = document.getElementById('loading-animation');
+
+    buttonText.style.display = 'none';
+    loadingAnimation.style.display = 'flex';
+
+    try {
+        const response = await fetch('/admin/api/invite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email,  resource_ids: resourceIds })
+        });
+        const data = await response.json();
+
+        if (data.message) {
+            buttonText.style.display = 'inline-block';
+            loadingAnimation.style.display = 'none';
+            //alert(data.message);
+            showNotification(data.message, 'success');
+            emailInput.value = '';
+            selectedResources.clear();
+            selectedConnections.clear();
+            selectedAgents.clear();
+            document.getElementById('userSelect').value = '';
+            document.getElementById('selectedResources').value = '';
+
+             document.querySelectorAll('.resource-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelectorAll('.checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            updateSelectedCount();
+            updateShareButton();
+            
+            fetchUsers();
+            fetchConnectionResources();
+            fetchAgentResources();
+
+
+        } else {
+            buttonText.style.display = 'inline-block';
+            loadingAnimation.style.display = 'none';
+            alert(data.error);
+        }
+    } catch (error) {
+        console.error(error);
+        buttonText.style.display = 'inline-block';
+        loadingAnimation.style.display = 'none';
+        alert('Error sending invite');
+    }
+}
+
+
+
 setupEventListeners();
 
 window.addEventListener('load', function() {
